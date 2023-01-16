@@ -3,8 +3,8 @@ The project includes a few parts:
 1)
 Establish a wireless link between a raspberry pi microcomputer, which is part of a hardware synthesizer, and an external device which will to begin with (and likely only) be a Windows laptop or tablet.
 Bluetooth will most likely be chosen as the protocol.
-This wireless link must be established on the Raspberry side so that it can communicate with a program that is already running there.  There are versions of that program written in both C++ and python.  It would be best to build the wriless link program as a shared library, accessible both through C++ and as a python module, but a decision will be made on which version is most important in the beginning.
-The wireless link must be established on the external device so that another, seperate UI program can communicate with it, either through a shared library or by incorporating code directly.
+This wireless link must be established on the Raspberry side so that it can communicate with a program that is already running there.  There are versions of that program written in both C++ and python and a decision will be made on which version is most important in the beginning and whether whether to incorporate code directly or use a library.
+The wireless link must be established on the external device so that another, seperate UI program can communicate with it.  It would be best to build the wireless link program as a shared library, accessible both through C++ and as a python module, but a decision will be made on which version is most important in the beginning, and whether directly incorporated code may be an initial solution.
 
 2)
 Write an API for the operations that the external UI must be able to call on the synthesizer (Raspberry side) and the correlated values, as well as operations that can be called from the synthesizer to update the external UI.  These are likely the same operations, but decisions can be made during the project time on which ones are necessary in each direction.
