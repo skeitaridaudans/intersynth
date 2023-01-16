@@ -5,6 +5,8 @@ Once the connection is established it is really not any more complex to add one 
 
 I will add another file, called SerialListener.h, where you can see exactly how the data is read from the Serial stream for each of these operations.  it is however not necessary to build the data in that exact way for the wireless link.  In some cases bit-masking is used in the Serial communications to combine two values into single bytes.  This may or may not be beneficial in our wireless system.  We should also make a new, clear and understandable, naming convention for our operations.
 
+Anywhere the value "attack" is used, this is an indicator of whether a value is part of an envelope point in the attack part (while key is held) of an envelope or the release part (after key is released).  These have separate index values, so the first value of each is 0, the first value when key is pressed (attack=true, index=0) and the first value after key is released (attack=false, index=0).
+
 The first ones, OPERATOR_VALUES and AMP_ENVELOPE_VALUE, are the ones we will focus on sending in the first iteration of the API.
 
 OPERATOR_VALUES
