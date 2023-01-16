@@ -1,0 +1,96 @@
+
+Here are the operations currently sent the Raspberry pi UI to the Teensy sound module within the hardware synthesizer.  They are listed here along with values that need to be sent along with them.
+
+Once the connection is established it is really not any more complex to add one part of the API than another.  However these operations can be very different in complexity to program for in the UI and some are more important in the UI than others.  Therefor I have grouped them together based on importance.
+
+I will add another file, called SerialListener.h, where you can see exactly how the data is read from the Serial stream for each of these operations.  it is however not necessary to build the data in that exact way for the wireless link.  In some cases bit-masking is used in the Serial communications to combine two values into single bytes.  This may or may not be beneficial in our wireless system.  We should also make a new, clear and understandable, naming convention for our operations.
+
+The first ones, OPERATOR_VALUES and AMP_ENVELOPE_VALUE, are the ones we will focus on sending in the first iteration of the API.
+
+OPERATOR_VALUES
+    oper_num
+    attack + alg_index
+    frequency_factor
+    amplitude
+AMP_ENVELOPE_VALUE
+    attack + index
+    time
+    amp_value
+
+The next ones for carrier/modulator connections should be implemented next and preferably also in the very first iteration of the API, so the UI can start using them as soon as possible.
+
+CARRIER_ON
+    oper_num
+CARRIER_OFF
+    oper_num
+MODULATED_BY
+    oper_num
+    mod_oper_num
+    add/remove
+CLEAR_OPERATORS
+    no data needed, clears all
+
+The algorithm envelope is an important part of the synth, so we should try to get this information into the API as soon as possible, but it may be a bit more complex to work with in the UI.  Therefor it is unlikely it will be used until closer to the second half of the project time.
+
+ALGORITHM_ENVELOPE_INFO
+    INSERT
+        attack + alg_index
+        time
+    REMOVE
+        attack + alg_index
+    ENVELOPE_SIZE
+        attack + new_size
+    UPDATE_TIME
+        attack + alg_index
+        bool attack = (bytes_read[1] & 0x80) != 0;
+        int alg_index = bytes_read[1] & 0x7F;
+        time
+    SOLO_POINT
+        attack + alg_index
+
+The following are not complex and can be added and used in the UI at any time but may also not be extremely important, so no rush.
+
+AMP_FIXED
+    IGNORE_ENVELOPE
+        amplitude_level (< 0 to turn envelope back on)
+    IGNORE_VELOCITY
+        ignore_velocity (true/false)
+FREQ_SYNCED_BY
+    oper_num
+    sync_oper_num
+    on/off
+
+NOTE_INFO
+    NOTE_ON
+        key (MIDI NUMBER or number outside MIDI for extra keys)
+        velocity
+        frequency (herz)
+    NOTE_OFF
+        key (MIDI NUMBER or number outside MIDI for extra keys)
+    NOTE_UPDATE
+        key (MIDI NUMBER or number outside MIDI for extra keys)
+        velocity
+        frequency (herz)
+MIDI_CHANNEL
+    midi_channel
+
+The EXPRESSIVE_CHANGE and CHANGE_BY_PARAMETER are not more complex to add to the API but they may be very complex to use in the UI, so not important until later stages.
+
+EXPRESSIVE_CHANGE
+    oper_num
+    frequency_change
+    amplitude_change
+
+CHANGE_BY_PARAMETER
+    SET_FREQ_PER_T
+        freq_amount
+    SET_AMPS_PER_T
+        amp_amount
+    LINEAR_T
+        freq_amount
+        amp_amount
+    FREQ_T
+        t (between 0.0 and 1.0)
+    AMP_T){
+        t (between 0.0 and 1.0)
+
