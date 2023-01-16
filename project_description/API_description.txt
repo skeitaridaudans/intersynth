@@ -44,8 +44,6 @@ ALGORITHM_ENVELOPE_INFO
         attack + new_size
     UPDATE_TIME
         attack + alg_index
-        bool attack = (bytes_read[1] & 0x80) != 0;
-        int alg_index = bytes_read[1] & 0x7F;
         time
     SOLO_POINT
         attack + alg_index
