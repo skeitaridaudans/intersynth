@@ -1,0 +1,24 @@
+Purpose:
+To minimize the time until VisualSynth (other group) can start programming against an actual AIP library from InterSynth (this group).  The groups can then be more independant sooner and interSynth can work on their part with less pressure.
+
+Idea:
+To encapsulate the API in MIDI control messages and use RtMidi (C/C++ library) to connect through an USB-MIDI card that can be directly connected to the synth via MIDI cable without going through the Rapberry Pi interface.
+
+Biggest hurdle:
+Encapsulate this MIDI program in a shared library the VisualSynth can use.  This is however work that is of use throughout the project as the functionality can later be replaced with the wireless connection wihtout changing the interface of the API library twoards VisualSynth (except when operations are added).
+
+Expected result:
+Shorter communication lines between groups in the beginning as VisualSynth can start work on the unknown of getting the connection working between InterSynth and VisualSynth.  Work on defining the API itself, operation names and data, can start sooner.  Once VisualSynth can use this system the pressure will be off InterSynth, regarding the cooperation between groups.  VisualSynth can the work on their UI and worst case end up finishing the project connected over a MIDI cable.
+
+
+Tilgangur:
+Að stytta enn frekar tímann þangað til VisualSynth hópurinn getur byrjað að vinna með API.  Þar með eru hóparnir aðskildir/sjálfstæðir fyrr, og InterSynth getur unnið í sínum hluta án pressu.
+
+Hugmynd:
+Að hjúpa API í MIDI control message og nota RtMidi (C++ library) til að tengjast USB-MIDI korti (ég á svoleiðis og það er súpereinfalt að tengjast) sem hægt er að beintengja við Synthann án þess að vesenast í gegnum Raspi viðmótið.
+
+Stærsta viðfangsefni:
+Að hjúpa þetta MIDI forrit í shared library sem VisualSynth getur notað.  Þetta er hins vegar vinna sem nýtist áfram þar sem hægt er að skipta út virkninni í þessu library þegar þráðlausar tengingar verða farnar að virka í staðinn.
+
+Vænt útkoma:
+Styttri boðleiðir strax í byrjun.  VisualSynth getur strax tengst.  Það er fyrr hægt að vinna í því að skilgreina APIinn sjálfan.  Þegar VisualSynth getur notað þetta er öll pressa af ykkur, í rauninni, varðandi samstarf hópanna.  Þá getur VisualSynth unnið í sínu viðmóti og worst-case bara endað á því að nota MIDI allan tímann.
