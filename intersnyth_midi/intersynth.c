@@ -27,7 +27,7 @@ uint32_t intersynth_get_num_ports()
     port_num = rtmidi_get_port_count(midiout); //Add error checking
     return port_num;
 }
-char* intersnyth_get_port_name(uint32_t port_num)
+char* intersynth_get_port_name(uint32_t port_num)
 {        // Close the port from the device
     rtmidi_close_port(midiout);
     // Free the device (The object itself (Call the deconstructor))
@@ -53,7 +53,7 @@ bool intersynth_select_port(uint32_t port_num)
     rtmidi_open_port(midiout, port_num, "Intersynth");
     return midiout->ok;
 }
-bool intersnyth_send_note(unsigned char key, unsigned char velocity)
+bool intersynth_send_note(unsigned char key, unsigned char velocity)
 {
     // Range check
     assert(key <= 127 && key >= 0);
@@ -94,14 +94,14 @@ bool intersynth_change_operator_values(unsigned char operator, unsigned char alg
     msg[0] = 0xF0; // Start of syssex
     msg[1] = 0x70; // intersynth identifier
     msg[2] = 0x15; // Size fuck im having an strok
-    msg[4] = 0x10 + operator;//  function id??
+    msg[3] = 0x10 + operator;//  function id??
     //msg[4] = operator; // Param 1
-    msg[5] = ((unsigned char) attack<<7) + alg_index;
+    msg[4] = ((unsigned char) attack<<7) + alg_index;
     //Sultu slakur
-    fragment_floating(frequency_factor, &msg[6]); // Param 4
-    fragment_floating(amplitude, &msg[11]); // Param 5
-    msg[16] = 0xF7; // END
-    rtmidi_out_send_message(midiout, msg, 17); // Send the actual serial message
+    fragment_floating(frequency_factor, &msg[5]); // Param 4
+    fragment_floating(amplitude, &msg[10]); // Param 5
+    msg[15] = 0xF7; // END
+    rtmidi_out_send_message(midiout, msg, 16); // Send the actual serial message
     // Return the ok status of the last function done on midiout
     return midiout->ok;
 }

@@ -18,10 +18,10 @@
 void intersynth_init();
 void intersynth_die();
 uint32_t intersynth_get_num_ports();
-char* intersnyth_get_port_name(uint32_t port_num);
-void intersnyth_free_get_port_name(char* arr);
+char* intersynth_get_port_name(uint32_t port_num);
+void intersynth_free_get_port_name(char* arr);
 bool intersynth_select_port(uint32_t port_num);
-bool intersnyth_send_note(unsigned char key, unsigned char velocity);
+bool intersynth_send_note(unsigned char key, unsigned char velocity);
 bool intersynth_change_operator_values(unsigned char operator, unsigned char alg_index, bool attack, float frequency_factor, float amplitude);
 bool intersynth_add_modulator(int operator_id, int modulator_id);
 
