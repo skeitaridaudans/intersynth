@@ -93,7 +93,7 @@ bool intersynth_change_operator_values(unsigned char operator, unsigned char alg
 
     msg[0] = 0xF0; // Start of syssex
     msg[1] = 0x70; // intersynth identifier
-    msg[2] = 0x15; // Size fuck im having an strok
+    msg[2] = 12; // Size fuck im having an strok
     msg[3] = 0x10 + operator;//  function id??
     //msg[4] = operator; // Param 1
     msg[4] = ((unsigned char) attack<<7) + alg_index;
