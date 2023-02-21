@@ -3,6 +3,7 @@
 //
 
 #include "intersynth.h"
+#include "messages.h"
 struct RtMidiWrapper* midiout = {0};
 void intersynth_init()
 {
@@ -53,7 +54,9 @@ bool intersynth_select_port(uint32_t port_num)
     rtmidi_open_port(midiout, port_num, "Intersynth");
     return midiout->ok;
 }
-bool intersnyth_send_note(unsigned char key, unsigned char velocity)
+
+
+bool intersnyth_send_note_on(unsigned char key, unsigned char velocity)
 {
     // Range check
     assert(key <= 127 && key >= 0);
@@ -69,6 +72,12 @@ bool intersnyth_send_note(unsigned char key, unsigned char velocity)
     // Return status code.
     return midiout->ok;
 }
+bool intersynth_send_note_off(unsigned char key)
+{
+    return intersnyth_send_note_on(key, 0); //xd
+}
+
+
 bool intersynth_change_operator_values(unsigned char operator, unsigned char alg_index, bool attack, float frequency_factor, float amplitude)
 {
     /*
@@ -94,7 +103,7 @@ bool intersynth_change_operator_values(unsigned char operator, unsigned char alg
     msg[0] = 0xF0; // Start of syssex
     msg[1] = 0x70; // intersynth identifier
     msg[2] = 0x15; // Size fuck im having an strok
-    msg[4] = 0x10 + operator;//  function id??
+    msg[4] = OPERATOR_VALUES + operator; // 0x10 + operator value
     //msg[4] = operator; // Param 1
     msg[5] = ((unsigned char) attack<<7) + alg_index;
     //Sultu slakur
@@ -115,12 +124,50 @@ bool intersynth_add_modulator(int operator_id, int modulator_id)
     msg[0] = 0xF0; // Start of syssex
     msg[1] = 0x70; // intersynth identifier
     msg[2] = 0x02;
-    msg[3] = 0x40 + operator_id;
-    msg[4] = 0x10 + modulator_id;
+    msg[3] = MODULATED_BY + operator_id;
+    msg[4] = MODULATOR_ON + modulator_id;
     msg[5] = 0xF7;
     rtmidi_out_send_message(midiout, msg, 6); // Send the actual serial message
     return midiout->ok;
-
+}
+bool intersynth_remove_modulator(int operator_id, int modulator_id)
+{
+    //
+    unsigned char msg[6];
+    msg[0] = 0xF0; // Start of syssex
+    msg[1] = 0x70; // intersynth identifier
+    msg[2] = 0x02;
+    msg[3] = MODULATED_BY + operator_id;
+    msg[4] = MODULATOR_OFF + modulator_id;
+    msg[5] = 0xF7;
+    rtmidi_out_send_message(midiout, msg, 6);
+    return midiout->ok;
 }
 
 
+bool intersynth_add_carrier(int operator_id)
+{
+    unsigned char msg[5];
+    msg[0] = 0xF0; // Start of syssex
+    msg[1] = 0x70; // intersynth identifier
+    msg[2] = 0x01;
+    // 0x0101 0000 + operator
+    msg[3] = CARRIER_ON + operator_id;
+    msg[4] = 0xF7;
+    rtmidi_out_send_message(midiout, msg, 5);
+    return midiout->ok;
+}
+
+
+bool intersynth_remove_carrier(int operator_id)
+{
+    unsigned char msg[5];
+    msg[0] = 0xF0; // Start of syssex
+    msg[1] = 0x70; // intersynth identifier
+    msg[2] = 0x01;
+    // 0x0110 0000 + operator
+    msg[3] = CARRIER_OFF + operator_id;
+    msg[4] = 0xF7;
+    rtmidi_out_send_message(midiout, msg, 5);
+    return midiout->ok;
+}
