@@ -56,7 +56,7 @@ bool intersynth_select_port(uint32_t port_num)
 }
 
 
-bool intersnyth_send_note_on(unsigned char key, unsigned char velocity)
+bool intersynth_send_note_on(unsigned char key, unsigned char velocity)
 {
     // Range check
     assert(key <= 127 && key >= 0);
@@ -74,7 +74,7 @@ bool intersnyth_send_note_on(unsigned char key, unsigned char velocity)
 }
 bool intersynth_send_note_off(unsigned char key)
 {
-    return intersnyth_send_note_on(key, 0); //xd
+    return intersynth_send_note_on(key, 0); //xd
 }
 
 
@@ -98,7 +98,7 @@ bool intersynth_change_operator_values(unsigned char operator, unsigned char alg
      * 17 bytes total
      */
     //ok fuck it just hardcode the size xd
-    unsigned char msg[17]; // Need to dynamically create the message fucks
+    unsigned char msg[16]; // Need to dynamically create the message fucks
 
     msg[0] = 0xF0; // Start of syssex
     msg[1] = 0x70; // intersynth identifier
@@ -110,7 +110,7 @@ bool intersynth_change_operator_values(unsigned char operator, unsigned char alg
     fragment_floating(frequency_factor, &msg[6]); // Param 4
     fragment_floating(amplitude, &msg[11]); // Param 5
     msg[16] = 0xF7; // END
-    rtmidi_out_send_message(midiout, msg, 17); // Send the actual serial message
+    rtmidi_out_send_message(midiout, msg, 16); // Send the actual serial message
     // Return the ok status of the last function done on midiout
     return midiout->ok;
 }

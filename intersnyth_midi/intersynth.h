@@ -23,7 +23,7 @@ void intersnyth_free_get_port_name(char* arr);
 bool intersynth_select_port(uint32_t port_num);
 
 //MIDI NOTES
-bool intersnyth_send_note_on(unsigned char key, unsigned char velocity);
+bool intersynth_send_note_on(unsigned char key, unsigned char velocity);
 bool intersynth_send_note_off(unsigned char key);
 
 //OPERATOR CHANGE
