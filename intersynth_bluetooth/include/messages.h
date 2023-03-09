@@ -6,6 +6,8 @@
 #define INTERSYNTH_BLUETOOTH_MESSAGES_H
 
 #include <stdbool.h>
+// TODO need to include the following to not have uint32_t error in src/messages.c
+#include <inttypes.h>
 
 
 //FLOATING FUNCTIONS
