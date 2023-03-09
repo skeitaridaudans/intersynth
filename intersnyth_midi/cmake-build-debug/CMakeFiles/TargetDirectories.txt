@@ -1,0 +1,3 @@
+C:/Users/Notandi/Desktop/HR/Tölvunarstærðfræði/6. önn/Lokaverkefni/sourcetree/intersnyth_midi/cmake-build-debug/CMakeFiles/midi_synth.dir
+C:/Users/Notandi/Desktop/HR/Tölvunarstærðfræði/6. önn/Lokaverkefni/sourcetree/intersnyth_midi/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/Notandi/Desktop/HR/Tölvunarstærðfræði/6. önn/Lokaverkefni/sourcetree/intersnyth_midi/cmake-build-debug/CMakeFiles/rebuild_cache.dir

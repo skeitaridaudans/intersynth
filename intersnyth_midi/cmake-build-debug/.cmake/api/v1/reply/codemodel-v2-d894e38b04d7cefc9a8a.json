@@ -1,0 +1,60 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "midi_synth",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "midi_synth::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-midi_synth-Debug-e45c58ef63d1698d3560.json",
+					"name" : "midi_synth",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/Notandi/Desktop/HR/T\u00f6lvunarst\u00e6r\u00f0fr\u00e6\u00f0i/6. \u00f6nn/Lokaverkefni/sourcetree/intersnyth_midi/cmake-build-debug",
+		"source" : "C:/Users/Notandi/Desktop/HR/T\u00f6lvunarst\u00e6r\u00f0fr\u00e6\u00f0i/6. \u00f6nn/Lokaverkefni/sourcetree/intersnyth_midi"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}
