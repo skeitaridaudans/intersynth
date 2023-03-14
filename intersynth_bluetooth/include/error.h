@@ -4,14 +4,11 @@
 
 #ifndef INTERSYNTH_BLUETOOTH_ERROR_H
 #define INTERSYNTH_BLUETOOTH_ERROR_H
-
 //DEFINE ERROR_T STRUCT / ENUM
-
 /**
  * @brief Error codes for intersynth
  * @TODO: Add more error codes & descriptions for each error code
  */
-
 typedef enum {
     INTERSYNTH_ERROR_SUCCESS, //success value
     INTERSYNTH_ERROR_FAILURE, // general failure value
@@ -33,5 +30,6 @@ void intersynth_set_error(intersynth_error_code error_code);
 
 void intersynth_set_success_error(void);
 
-intersynth_error_t intersynth_error;
+const intersynth_error_t * intersynth_get_error(void);
+void intersynth_clear_error(void);
 #endif //INTERSYNTH_BLUETOOTH_ERROR_H
