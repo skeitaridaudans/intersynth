@@ -10,6 +10,16 @@
 #include <inttypes.h>
 
 
+// if need to define something, to it here
+#define MIDI_NOTE_MESSAGE_SIZE 3
+#define OPERATOR_VALUES 0x10
+#define MODULATED_BY 0x40
+#define MODULATOR_ON 0x10
+#define MODULATOR_OFF 0x00
+#define CARRIER_ON 0x50
+#define CARRIER_OFF 0x60
+
+
 //FLOATING FUNCTIONS
 void store_float_in_buffer(char *buffer, float value);
 float reconstruct_float_from_buffer(const char *buffer);
