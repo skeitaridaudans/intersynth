@@ -4,7 +4,7 @@
 
 #include "../include/messages.h"
 #include <assert.h>
-#include "../src/bluetooth.c"
+#include "../include/bluetooth.h"
 
 //FLOATING FUNCTIONS
 // function to store a floating point value in 5 bytes with each byte containing 7 bits
