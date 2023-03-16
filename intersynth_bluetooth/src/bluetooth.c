@@ -22,7 +22,7 @@ void intersynth_init_bluetooth(void) {
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
         return;
     }
-    printf("SOCKET WSA ERROR %d", WSAGetLastError());
+    //printf("SOCKET WSA ERROR %d", WSAGetLastError());
     bluetooth_handler.addr.addressFamily = AF_BTH;
     bluetooth_handler.addr.btAddr = 0; // set the Bluetooth address to 0, will be updated later
     bluetooth_handler.addr.port = 4;
@@ -36,39 +36,72 @@ void intersynth_deinit_bluetooth(void) {
     {
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
     }
+    int WSAclean = WSACleanup();
+    if(WSAclean < 0)
+    {
+        intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
+    }
 }
 
 //BLUETOOTH SETUP
-void intersynth_scan(void);
-
-void intersynth_get_rssi(void)
+void intersynth_scan(void)
 {
-    //Get RSSI of current connection via bluetooth_handler.socket
-    //int dev_id = hci_get_route(NULL);
-    //int sock = hci_open_dev( dev_id );
-    //if (dev_id < 0 || sock < 0) {
-    //    fprintf(stderr, "Could not open socket");
-    //    intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
-    //}
-    //int8_t rssi = 0;
-    //struct hci_conn_info_req *cr;
-    //cr = malloc(sizeof(*cr) + sizeof(struct hci_conn_info));
-    //bacpy(&cr->bdaddr, &bluetooth_handler.addr.rc_bdaddr);
-    //cr->type = ACL_LINK;
-    //if (ioctl(sock, HCIGETCONNINFO, (unsigned long) cr) < 0) {
-    //    fprintf(stderr, "Could not get connection info");
-    //    intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
-    //}
-    //if(hci_read_rssi(sock, htobs(cr->conn_info->handle), &rssi, 1000)< 0)
-    //{
-    //    fprintf(stderr, "Could not read RSSI");
-    //    intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
-    //}
-    //free(cr);
-    //hci_close_dev(sock);
-    //bluetooth_handler.rssi = rssi;
-    //intersynth_set_success_error();
-    return;
+    //Scan the local area for devices and store MAC and Name
+    //TODO: PUT EVERY FOUND DEVICE INTO A GLOBAL ARRAY OF intersynth_bluetooth_device_inquiry structures.
+    //Set flags so we flush the cache and get the names and addresses (MAC)
+    DWORD flags =  LUP_CONTAINERS | LUP_FLUSHCACHE | LUP_RETURN_ADDR | LUP_RETURN_NAME;
+    WSAQUERYSET querySet;
+    memset(&querySet, 0x00, sizeof(WSAQUERYSET)); // Clear it
+    querySet.dwSize = sizeof(WSAQUERYSET); // No idea
+    querySet.dwNameSpace = NS_BTH; //We want to find bluetooth devices
+    //querySet.lpServiceClassId = (LPGUID) &SerialPortServiceClass_UUID;
+    HANDLE hLookup = NULL; // We get a handle back from WSALookupServiceBegin function to iterate over found devices
+
+    int result = WSALookupServiceBegin(&querySet, flags, &hLookup);
+    if (result != 0) {
+        //If WSALookup fails
+        intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
+        return;
+    }
+
+    //Buffers and setup for the next system call
+    BYTE buffer[4096];
+    DWORD bufferLength = sizeof(buffer);
+    WSAQUERYSET* pResults = (WSAQUERYSET*) buffer;
+
+
+    while (TRUE) {
+        //While loop to iterate over all of the devices we found
+        result = WSALookupServiceNext(hLookup, flags, &bufferLength, pResults);
+        if (result == WSA_E_NO_MORE || result == WSAENOMORE) {
+            break; //If no more devices where found
+        }
+        else if (result == -1 && WSAGetLastError() == 10110){
+            break; //Same as above
+        }
+        else if (result != 0) {
+            printf("result: %d\n", result);
+            continue;
+        }
+
+        // Extract the MAC address from the Bluetooth address structure
+        BTH_ADDR bthAddr = ((SOCKADDR_BTH*) pResults->lpcsaBuffer->RemoteAddr.lpSockaddr)->btAddr;
+
+        // Convert the MAC address to a string
+        char szMacAddr[18];
+        snprintf(szMacAddr, sizeof(szMacAddr), "%02X:%02X:%02X:%02X:%02X:%02X",
+                 (bthAddr >> (5 * 8)) & 0xff,
+                 (bthAddr >> (4 * 8)) & 0xff,
+                 (bthAddr >> (3 * 8)) & 0xff,
+                 (bthAddr >> (2 * 8)) & 0xff,
+                 (bthAddr >> (1 * 8)) & 0xff,
+                 (bthAddr >> (0 * 8)) & 0xff);
+        // Store the MAC address and name in a global array or data structure
+        
+        // Here, we'll just print them to the console
+        printf("Device Name: %s, MAC Address: %s\n", pResults->lpszServiceInstanceName, szMacAddr);
+    }
+    WSALookupServiceEnd(hLookup);
 }
 
 void intersynth_connect(char btaddr[18])

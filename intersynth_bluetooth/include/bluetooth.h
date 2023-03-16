@@ -14,6 +14,12 @@ typedef struct {
     int socket;
     SOCKADDR_BTH addr;
 } intersynth_bluetooth_t;
+typedef struct
+{
+    BTH_ADDR btaddr;
+    LPSTR name;
+} intersynth_bluetooth_device_inquiry;
+
 
 static intersynth_bluetooth_t bluetooth_handler;
 void intersynth_init_bluetooth(void);
