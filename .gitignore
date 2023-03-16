@@ -1,3 +1,7 @@
+# CLion project files
+.idea
+cmake-build-*
+
 # Default ignored files
 /shelf/
 /intersynth_bluetooth/.idea/workspace.xml
