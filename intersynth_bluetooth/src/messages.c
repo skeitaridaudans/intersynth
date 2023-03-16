@@ -27,6 +27,7 @@ float reconstruct_float_from_buffer(const char *buffer) {
     return *((float*) &float_bits);  // convert the bits back to a floating point value
 }
 
+
 //MIDI NOTES
 void intersynth_send_note_on(unsigned char key, unsigned char velocity) //Intersynth_midi
 {
@@ -47,32 +48,26 @@ void intersynth_send_note_off(unsigned char key) //Intersynth_midi
     intersynth_send_note_on(key, 0);
 }
 
-void intersynth_send_note_off(unsigned char key); //Intersynth_midi
-
 //OPERATOR CHANGE
 void intersynth_change_operator_values(unsigned char operator, unsigned char alg_index, bool attack, float frequency_factor, float amplitude) //Intersynth_midi
 {
 unsigned char msg[16];
-msg[0] = 0xF0; // Start of syssex
-msg[1] = 0x70; // intersynth identifier
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
 msg[2] = 0x15; // Size
-// OPERATOR_VALUES 0x10
 msg[4] = OPERATOR_VALUES + operator; // 0x10 + operator value
-//msg[4] = operator; // Param 1
 msg[5] = ((unsigned char) attack<<7) + alg_index;
 
 
 // need to call store_float_in_buffer instead of fragment_floating
+// to convert the float frequency_factor
 store_float_in_buffer(&msg[6], frequency_factor);
-//fragment_floating(frequency_factor, &msg[6]); // Param 4
 
 
-// doing the same to convert the float
-store_float_in_buffer(&msg[6], frequency_factor);
-//fragment_floating(amplitude, &msg[11]); // Param 5
+// doing the same to convert the float amplitude
+store_float_in_buffer(&msg[11], amplitude); // Param 5
 
-
-msg[16] = 0xF7; // END
+msg[16] = MESSAGE_END;
 // no need to have rtmidiout stuff here, the function send the msg
 // no need for a return either for that void here
 intersynth_send(msg, 16);
@@ -82,36 +77,36 @@ intersynth_send(msg, 16);
 void intersynth_add_modulator(int operator_id, int modulator_id) //Intersynth_midi
 {
     unsigned char msg[6];
-    msg[0] = 0xF0; // Start of syssex
-    msg[1] = 0x70; // intersynth identifier
+    msg[0] = SYSSEX_START;
+    msg[1] = INTERSYNTH_IDENTIFIER;
     msg[2] = 0x02;
     msg[3] = MODULATED_BY + operator_id;
     msg[4] = MODULATOR_ON + modulator_id;
-    msg[5] = 0xF7;
-    intersynth_send(msg, 6); // Send the actual message
+    msg[5] = MESSAGE_END;
+    intersynth_send(msg, 6);
 }
 void intersynth_remove_modulator(int operator_id, int modulator_id) //Intersynth_midi
 {
     unsigned char msg[6];
-    msg[0] = 0xF0; // Start of syssex
-    msg[1] = 0x70; // intersynth identifier
+    msg[0] = SYSSEX_START;
+    msg[1] = INTERSYNTH_IDENTIFIER;
     msg[2] = 0x02;
     msg[3] = MODULATED_BY + operator_id;
     msg[4] = MODULATOR_OFF + modulator_id;
-    msg[5] = 0xF7;
+    msg[5] = MESSAGE_END;
     intersynth_send(msg, 6);
 }
+
 
 //OPERATOR CARRIERS
 void intersynth_add_carrier(int operator_id) //intersynth_midi
 {
     unsigned char msg[5];
-    msg[0] = 0xF0; // Start of syssex
-    msg[1] = 0x70; // intersynth identifier
+    msg[0] = SYSSEX_START;
+    msg[1] = INTERSYNTH_IDENTIFIER;
     msg[2] = 0x01;
-// 0x0101 0000 + operator
     msg[3] = CARRIER_ON + operator_id;
-    msg[4] = 0xF7;
+    msg[4] = MESSAGE_END;
     intersynth_send(msg, 5);
 }
 
@@ -119,11 +114,10 @@ void intersynth_add_carrier(int operator_id) //intersynth_midi
 void intersynth_remove_carrier(int operator_id) //intersynth_midi
 {
     unsigned char msg[5];
-    msg[0] = 0xF0; // Start of syssex
-    msg[1] = 0x70; // intersynth identifier
+    msg[0] = SYSSEX_START;
+    msg[1] = INTERSYNTH_IDENTIFIER;
     msg[2] = 0x01;
-    // 0x0110 0000 + operator
     msg[3] = CARRIER_OFF + operator_id;
-    msg[4] = 0xF7;
+    msg[4] = MESSAGE_END;
     intersynth_send(msg, 5);
 }
