@@ -55,7 +55,7 @@ void intersynth_change_operator_values(unsigned char operator, unsigned char alg
 unsigned char msg[16];
 msg[0] = 0xF0; // Start of syssex
 msg[1] = 0x70; // intersynth identifier
-msg[2] = 0x15; // Size fuck im having an strok
+msg[2] = 0x15; // Size
 // OPERATOR_VALUES 0x10
 msg[4] = OPERATOR_VALUES + operator; // 0x10 + operator value
 //msg[4] = operator; // Param 1
@@ -88,7 +88,7 @@ void intersynth_add_modulator(int operator_id, int modulator_id) //Intersynth_mi
     msg[3] = MODULATED_BY + operator_id;
     msg[4] = MODULATOR_ON + modulator_id;
     msg[5] = 0xF7;
-    intersynth_send(msg, 6); // Send the actual serial message
+    intersynth_send(msg, 6); // Send the actual message
 }
 void intersynth_remove_modulator(int operator_id, int modulator_id) //Intersynth_midi
 {
