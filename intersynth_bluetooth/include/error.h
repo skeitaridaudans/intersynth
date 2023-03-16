@@ -17,6 +17,8 @@ typedef enum {
     INTERSYNTH_ERROR_NOT_CONNECTED, //not connected to a bluetooth device
     INTERSYNTH_ERROR_NOT_INITIALIZED, //not initialized
     INTERSYNTH_ERROR_BLUETOOTH, //bluetooth error (Look at ERRNO)
+    INTERSYNTH_ERROR_MEMORY,
+    INTERSYNTH_ERROR_MEMORY_NOT_CLEARED,
 } intersynth_error_code;
 
 typedef struct intersynth_error_t

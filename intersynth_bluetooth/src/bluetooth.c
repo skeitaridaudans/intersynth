@@ -7,6 +7,8 @@
 #include "../include/error.h"
 #include <stdio.h>
 
+int total_devices = 0;
+intersynth_bluetooth_device_inquiry* intersynth_ii = NULL;
 
 void intersynth_init_bluetooth(void) {
     WSADATA wsaData;
@@ -46,6 +48,11 @@ void intersynth_deinit_bluetooth(void) {
 //BLUETOOTH SETUP
 void intersynth_scan(void)
 {
+    if(intersynth_ii != NULL)
+    {
+        intersynth_set_error(INTERSYNTH_ERROR_MEMORY_NOT_CLEARED);
+        return;
+    }
     //Scan the local area for devices and store MAC and Name
     //TODO: PUT EVERY FOUND DEVICE INTO A GLOBAL ARRAY OF intersynth_bluetooth_device_inquiry structures.
     //Set flags so we flush the cache and get the names and addresses (MAC)
@@ -69,7 +76,7 @@ void intersynth_scan(void)
     DWORD bufferLength = sizeof(buffer);
     WSAQUERYSET* pResults = (WSAQUERYSET*) buffer;
 
-
+    //intersynth_ii = (intersynth_bluetooth_device_inquiry*)malloc(MAX_DEVICE_II * sizeof(intersynth_bluetooth_device_inquiry));
     while (TRUE) {
         //While loop to iterate over all of the devices we found
         result = WSALookupServiceNext(hLookup, flags, &bufferLength, pResults);
@@ -83,6 +90,16 @@ void intersynth_scan(void)
             printf("result: %d\n", result);
             continue;
         }
+        total_devices++;
+        intersynth_bluetooth_device_inquiry* temp = realloc(intersynth_ii, total_devices * sizeof(intersynth_bluetooth_device_inquiry));
+        if(temp == NULL)
+        {
+            intersynth_set_error(INTERSYNTH_ERROR_MEMORY);
+            free(intersynth_ii);
+            intersynth_ii = NULL;
+            return;
+        }
+        intersynth_ii = temp;
 
         // Extract the MAC address from the Bluetooth address structure
         BTH_ADDR bthAddr = ((SOCKADDR_BTH*) pResults->lpcsaBuffer->RemoteAddr.lpSockaddr)->btAddr;
@@ -97,17 +114,57 @@ void intersynth_scan(void)
                  (bthAddr >> (1 * 8)) & 0xff,
                  (bthAddr >> (0 * 8)) & 0xff);
         // Store the MAC address and name in a global array or data structure
-        
+        intersynth_ii[total_devices-1].btaddr = bthAddr;
+        intersynth_ii[total_devices-1].name = (LPSTR)malloc(sizeof(TCHAR) * (256 + 1));
+        if (intersynth_ii[total_devices - 1].name == NULL) {
+            intersynth_set_error(INTERSYNTH_ERROR_MEMORY);
+            for (int i = 0; i < total_devices - 1; i++) {
+                free(intersynth_ii[i].name);
+            }
+            free(intersynth_ii);
+            intersynth_ii = NULL;
+            return;
+        }
+        memset(intersynth_ii[total_devices - 1].name, 0, sizeof(TCHAR) * (256 + 1));
+        strcpy(intersynth_ii[total_devices - 1].name,pResults->lpszServiceInstanceName);
         // Here, we'll just print them to the console
         printf("Device Name: %s, MAC Address: %s\n", pResults->lpszServiceInstanceName, szMacAddr);
     }
     WSALookupServiceEnd(hLookup);
 }
 
-void intersynth_connect(char btaddr[18])
+intersynth_bluetooth_device_inquiry* intersynth_scan_get_results(void)
+{
+    return intersynth_ii;
+}
+
+void intersynth_scan_free(void)
+{
+    for (int i = 0; i < total_devices - 1; i++) {
+        free(intersynth_ii[i].name);
+    }
+    free(intersynth_ii);
+    intersynth_ii = NULL;
+    total_devices = 0;
+}
+
+int intersynth_scan_devices_found(void)
+{
+    return total_devices;
+}
+
+void intersynth_select_device(int device_index)
+{
+    //Tries to connect to the device index inside of intersynth_ii global array. Check error to see if connection has ben established.
+    intersynth_connect(intersynth_ii[device_index].btaddr);
+}
+
+
+static void intersynth_connect(BTH_ADDR btaddr)
 {
     //Connect to a device via bluetooth_handler.socket using bluetooth_handler.addr#
     // TODO: FIND WINDOWS EQ = str2ba(btaddr, &bluetooth_handler.addr.rc_bdaddr);
+    /*
     BLUETOOTH_ADDRESS btaddrs;
 
     btaddrs.rgBytes[0] = 0xFC;
@@ -118,7 +175,8 @@ void intersynth_connect(char btaddr[18])
     btaddrs.rgBytes[5] = 0xE4;
 
     bluetooth_handler.addr.btAddr = btaddrs.ullLong;
-
+    */
+    bluetooth_handler.addr.btAddr = btaddr;
     if(connect(bluetooth_handler.socket, (const struct sockaddr *) &bluetooth_handler.addr, sizeof(bluetooth_handler.addr)) < 0) {
         printf("WSA ERROR %d\n",WSAGetLastError());
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);

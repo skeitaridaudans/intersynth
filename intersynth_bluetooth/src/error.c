@@ -14,7 +14,9 @@ const char* error_codes[] = {
         "Not supported",
         "Not connected",
         "Not initialized",
-        "Bluetooth error"};
+        "Bluetooth error",
+        "Not enough memory",
+        "Memory not cleared"};
 
 const intersynth_error_t* intersynth_get_error(void) {
     return &intersynth_error;
