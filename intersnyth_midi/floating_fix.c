@@ -8,13 +8,13 @@
 #include "floating_fix.h"
 void fragment_floating(float f, unsigned char* fragmented)
 {
-    // i am going to break the geniva convension
-    memcpy(fragmented, &f, 4);
-    int x = ((fragmented[0] >> 7) & 1);
-    int y = ((fragmented[1] >> 7) & 1);
-    int z = ((fragmented[2] >> 7) & 1);
-    int w = ((fragmented[3] >> 7) & 1);
-    fragmented[4] = (unsigned char)x | (unsigned char)y << 1 | (unsigned char)z << 2 | (unsigned char)w << 3;
+    //Fragments the float into 5 bytes in the char array.
+    memcpy(fragmented, (const void *) &f, sizeof(f));
+    unsigned char x = ((fragmented[0] >> 7) & 1);
+    unsigned char y = ((fragmented[1] >> 7) & 1);
+    unsigned char z = ((fragmented[2] >> 7) & 1);
+    unsigned char w = ((fragmented[3] >> 7) & 1);
+    fragmented[4] |= x | (y << 1) | (z << 2) | (w << 3);
 
     //Taking the end bit of every byte
     for(int i=0; i<5;i++)
