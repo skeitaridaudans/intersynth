@@ -166,8 +166,11 @@ void send_algorithm_envelopes(){
  */
 
 // @TODO Sophie need to check again amp env in teensy code
+// https://github.com/skeitaridaudans/lovesynths-teensy/blob/main/SerialListener.h
 
 //AMP_ENVELOPE_INFO
+
+
 
 //AMP_ENVELOPE_VALUE
 //    attack + index
