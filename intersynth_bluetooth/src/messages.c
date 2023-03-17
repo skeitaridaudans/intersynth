@@ -2,8 +2,8 @@
 // Created by star on 6.3.2023.
 //
 
-#include "../include/messages.h"
 #include <assert.h>
+#include "../include/messages.h"
 #include "../include/bluetooth.h"
 
 //FLOATING FUNCTIONS
@@ -121,3 +121,91 @@ void intersynth_remove_carrier(int operator_id) //intersynth_midi
     msg[4] = MESSAGE_END;
     intersynth_send(msg, 5);
 }
+
+// following functions not in intersynth_midi
+// @TODO to implement
+
+void intersynth_clear_operators();
+
+/*
+ fra https://github.com/skeitaridaudans/lovesynths-cpp/blob/main/operators.cpp
+ WTF is that??? SOLO_POINT? hvad er attack solo?
+
+void send_default_algorithm(){
+
+    send_full_envelopes();
+
+    send_algorithm();
+
+    send_current_operators(); // MAY HAVE TO DO THIS FOR EVERY ALGORITHM ENVELOPE POINT ... LATER FOR send_full_algorithm, if needed
+
+    send_byte(2);
+    send_byte(ALGORITHM_ENVELOPE_INFO + SOLO_POINT);         // #define ALGORITHM_ENVELOPE_INFO 0x80 + #define SOLO_POINT 0x05
+    send_byte(0x7F);                                         // # BIG NUMBER MEANS REMOVE SOLO
+    // send_byte(self.editing_point[1] + 0x80)     // # ATTACK SOLO
+    // send_byte(self.editing_point[1])            // # RELEASE SOLO
+}
+*/
+
+/*
+
+void send_algorithm_envelopes(){
+    int attack_envelope_size = 0;
+    for(; attack_envelope_size < 4 && alg_env_point_active[attack_envelope_size]; attack_envelope_size++){}
+    int release_envelope_size = alg_env_point_active[4] ? 1 : 0;
+
+    // FIRST SEND THAT THERE IS ONLY ONE ATTACK ENVELOPE POINT AND NO RELEASE
+    send_byte(2);       // message size: 2 bytes
+    send_byte(ALGORITHM_ENVELOPE_INFO + ENVELOPE_SIZE);    // #define ALGORITHM_ENVELOPE_INFO 0x80 + #define ENVELOPE_SIZE 0x03
+    send_byte(attack_envelope_size + 0x80);// attack envelope size
+    send_byte(2);
+    send_byte(ALGORITHM_ENVELOPE_INFO + ENVELOPE_SIZE);    // #define ALGORITHM_ENVELOPE_INFO 0x80 + #define ENVELOPE_SIZE 0x03
+    send_byte(release_envelope_size + 0);   // release envelope size
+}
+
+ */
+
+// @TODO Sophie need to check again amp env in teensy code
+
+//AMP_ENVELOPE_INFO
+
+//AMP_ENVELOPE_VALUE
+//    attack + index
+//    time
+//    amp_value
+
+//ALGORITHM_ENVELOPE_INFO
+// ATTACK 0x80
+void intersynth_alg_envelope_info_insert(bool attack, int alg_index, float time);
+void intersynth_alg_envelope_info_remove(bool attack, int alg_index);
+void intersynth_alg_envelope_info_envelope_size(bool attack, int new_size);
+void intersynth_alg_envelope_info_update_time(bool attack, int alg_index, float new_time);
+void intersynth_alg_envelope_info_solo_value(bool attack, int alg_index);
+
+//AMP FIXED
+void intersynth_amp_fixed_ignore_envelope(float amp_level);
+void intersynth_amp_fixed_ignore_velocity(bool ignore);
+
+
+//FREQ SYNCED BY
+void intersynth_freq_synced_by(int operator_id, int sync_operator_num, bool on_off);
+
+
+
+//NOTE INFO
+void intersynth_note_info_note_on(int key, int velocity, float freq)
+{
+// Range check
+assert(key <= 127 && key >= 0);
+assert(velocity <= 127 && velocity >= 0);
+// assert(freq )
+}
+
+void intersynth_note_info_note_off(int key);
+void intersynth_note_info_note_update(int key, int velocity, float freq);
+
+//NOTE MIDICHANNEL
+void intersynth_note_midi_channel(int midichannel);
+
+//EXPRESSIVE CHANGE
+void intersynth_expressive_change(int op_num,float freq_factor, float amp_factor);

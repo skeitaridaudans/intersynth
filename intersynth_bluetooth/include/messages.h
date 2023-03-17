@@ -21,6 +21,9 @@
 #define SYSSEX_START 0xF0
 #define INTERSYNTH_IDENTIFIER 0x70
 #define MESSAGE_END 0xF7
+#define ATTACK 0x80
+#define RELEASE 0x00
+
 
 
 //FLOATING FUNCTIONS
@@ -48,12 +51,12 @@ void intersynth_remove_carrier(int operator_id); //intersynth_midi
 
 void intersynth_clear_operators(void); //ekki intersynth_midi
 
-//AMPLITUDE ENVELOPE INFO
-void intersynth_amp_envelope_info_insert(bool attack, int alg_index, float time); //ekki intersynth_midi
-void intersynth_amp_envelope_info_remove(bool attack, int alg_index);
-void intersynth_amp_envelope_info_envelope_size(bool attack, int new_size);
-void intersynth_amp_envelope_info_update_time(bool attack, int alg_index, float new_time);
-void intersynth_amp_envelope_info_solo_value(bool attack, int alg_index);
+//ALGORITHM_ENVELOPE_INFO
+void intersynth_alg_envelope_info_insert(bool attack, int alg_index, float time); //ekki intersynth_midi
+void intersynth_alg_envelope_info_remove(bool attack, int alg_index);
+void intersynth_alg_envelope_info_envelope_size(bool attack, int new_size);
+void intersynth_alg_envelope_info_update_time(bool attack, int alg_index, float new_time);
+void intersynth_alg_envelope_info_solo_value(bool attack, int alg_index);
 
 //AMP FIXED
 void intersynth_amp_fixed_ignore_envelope(float amp_level);
@@ -65,9 +68,9 @@ void intersynth_freq_synced_by(int operator_id, int sync_operator_num, bool on_o
 
 
 //NOTE INFO
-void intersynth_note_info_note_on(int note, int velocity, float freq);
-void intersynth_note_info_note_off(int note);
-void intersynth_note_info_note_update(int note, int velocity, float freq);
+void intersynth_note_info_note_on(int key, int velocity, float freq);
+void intersynth_note_info_note_off(int key);
+void intersynth_note_info_note_update(int key, int velocity, float freq);
 
 //NOTE MIDICHANNEL
 void intersynth_note_midi_channel(int midichannel);
