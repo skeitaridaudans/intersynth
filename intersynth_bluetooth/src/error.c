@@ -36,3 +36,13 @@ void intersynth_clear_error(void) {
     intersynth_error.error_code = INTERSYNTH_ERROR_SUCCESS;
     intersynth_error.error_string = error_codes[INTERSYNTH_ERROR_SUCCESS];
 }
+
+intersynth_error_code intersynth_get_error_code(void)
+{
+    return intersynth_error.error_code;
+}
+
+const char* intersynth_get_error_string(intersynth_error_code error_code)
+{
+    return error_codes[error_code];
+}

@@ -34,4 +34,9 @@ void intersynth_set_success_error(void);
 
 const intersynth_error_t * intersynth_get_error(void);
 void intersynth_clear_error(void);
+
+intersynth_error_code intersynth_get_error_code(void);
+
+const char* intersynth_get_error_string(intersynth_error_code error_code);
+
 #endif //INTERSYNTH_BLUETOOTH_ERROR_H
