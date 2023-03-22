@@ -31,13 +31,13 @@ int main(int argc, char **argv) {
     intersynth_bluetooth_device_inquiry* ii = intersynth_scan_get_results();
     //iterating over the found devices like so.
     for (int i = 0; i < total_devices; i++) {
-        printf("Device %d: Name: %s, Address: %02X:%02X:%02X:%02X:%02X:%02X\n", i+1, ii[i].name,
+        printf("Device %d: Name: %s, Address: %02llX:%02llX:%02llX:%02llX:%02llX:%02llX\n", i+1, ii[i].name,
                (ii[i].btaddr >> 40) & 0xFF, (ii[i].btaddr >> 32) & 0xFF,
                (ii[i].btaddr >> 24) & 0xFF, (ii[i].btaddr >> 16) & 0xFF,
                (ii[i].btaddr >> 8) & 0xFF, (ii[i].btaddr & 0xFF));
     }
 
-    printf("intersynth_scan_free");
+    printf("intersynth_scan_free\n");
     intersynth_scan_free();
     printf("%s\n",error->error_string);
     printf("intersynth die\n");
