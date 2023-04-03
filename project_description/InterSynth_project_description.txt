@@ -12,7 +12,7 @@ A separate file, API_description, is a companion to this description.  It holds 
 
 3)
 Measure throughput, latency and other important values on the Bluetooth link.  Also determine whether the established connection and API can support a suffiently enjoyable user experience.
-Compare this speed and experience with both a wired IDI link and a TCP/IP connection, both in terms of speed/usability and in terms of ease of setup for the user.
+Compare this speed and experience with both a wired IDI link and a TCP/IP connection, both in terms of speed and reliability and in terms of ease of setup for the user.
 
 
 During these tasks it is very likely that the group will write a text-based UI of their own for testing purposes.  This UI may also be used as a sort of live programming interface for the synthesizer itself and a template for other external UIs' communication with the synthesizer hardware.
