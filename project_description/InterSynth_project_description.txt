@@ -1,8 +1,8 @@
 The project includes a few responsibilities:
 
 1)
-Establish a wireless link between a raspberry pi microcomputer, which is part of a hardware synthesizer, and an external device which will to begin with (and likely only) be a Windows laptop or tablet.
-Bluetooth will most likely be chosen as the protocol.
+Establish a link between a raspberry pi microcomputer, which is part of a hardware synthesizer, and an external device which will to begin with (and likely only) be a Windows laptop or tablet.
+Bluetooth will most likely be chosen as the protocol, in addition to testin using a cabled midi connection.
 This wireless link must be established on the Raspberry side so that it can communicate with a program that is already running there.  There are versions of that program written in both C++ and python and a decision will be made on which version is most important in the beginning and whether to incorporate code directly or use a library.
 The wireless link must be established on the external device so that another, seperate UI program can communicate with it.  It would be best to build the wireless link program as a shared library, accessible through C++, as a python module or through another environment depending on the preference of the UI team.  A decision will be made on which version is most important in the beginning, and whether directly incorporated code may be an initial solution.
 
@@ -12,6 +12,9 @@ A separate file, API_description, is a companion to this description.  It holds 
 
 3)
 Measure throughput, latency and other important values on the Bluetooth link.  Also determine whether the established connection and API can support a suffiently enjoyable user experience.
+Compare this speed and experience with both a wired IDI link and a TCP/IP connection, both in terms of speed/usability and in terms of ease of setup for the user.
 
 
 During these tasks it is very likely that the group will write a text-based UI of their own for testing purposes.  This UI may also be used as a sort of live programming interface for the synthesizer itself and a template for other external UIs' communication with the synthesizer hardware.
+
+The company, LOVE Synthesizers, will be responsible for setting the synth-side projects up in a way that it is straight forward for the group to integrate their API and connection code into that and help out making sure everything works correctly on that side.
