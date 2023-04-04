@@ -4,6 +4,7 @@
 #include "include/intersynth.h"
 
 int main(int argc, char **argv) {
-    printf("Hello, World!\n");
-    return 0;
+    intersynth_init_bluetooth();
+    intersynth_error_t* error = intersynth_get_error();
+    printf("%s\n",error->error_string);
 }

@@ -5,47 +5,51 @@
 #ifndef INTERSYNTH_BLUETOOTH_BLUETOOTH_H
 #define INTERSYNTH_BLUETOOTH_BLUETOOTH_H
 
-#if(defined(__linux__) || defined(__unix__))
-#include <bluetooth/bluetooth.h>
-#include <bluetooth/rfcomm.h>
-#include <bluetooth/hci.h>
-#include <bluetooth/hci_lib.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <malloc.h>
-#include <sys/ioctl.h>
-#include <errno.h>
-
-#elif defined(_WIN32)
-#include <winsock2.h>
-#include <ws2bth.h>
-#include <bthsdpdef.h>
-#include <bthdef.h>
-#include <bthledef.h>
-#include <BluetoothAPIs.h>
-
-#endif
-
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 #include "error.h"
+
+typedef struct {
+    char btaddr[19];
+    int8_t rssi;
+} intersynth_bluetooth_device_inquiry;
+
+int total_devices = 0;
+intersynth_bluetooth_device_inquiry* intersynth_ii = NULL;
+
+
+#ifdef _WIN32
+typedef struct {
+    int socket;
+    SOCKADDR_BTH addr;
+    int8_t rssi;
+} intersynth_bluetooth_t;
+#elif defined(__APPLE__)
+typedef struct {
+    int socket;
+    struct sockaddr addr;
+    int8_t rssi;
+} intersynth_bluetooth_t;
+#elif defined(__linux__)
 typedef struct {
     int socket;
     struct sockaddr_rc addr;
     int8_t rssi;
-
-
 } intersynth_bluetooth_t;
 
-intersynth_bluetooth_t bluetooth_handler;
+#else
+#error Unsupported platform
+#endif
 
 void intersynth_init_bluetooth(void);
 void intersynth_deinit_bluetooth(void);
 //BLUETOOTH SETUP
 void intersynth_scan(void);
-void intersynth_free_scan(void);
-
-int8_t intersynth_get_rssi(void);
-void intersynth_connect(char btaddr[18]);
+intersynth_bluetooth_device_inquiry* intersynth_scan_get_results(void);
+void intersynth_scan_free(void);
+int intersynth_scan_devices_found(void);
+void intersynth_select_device(int device_index);
 void intersynth_disconnect(void);
 
 //BLUETOOTH SEND

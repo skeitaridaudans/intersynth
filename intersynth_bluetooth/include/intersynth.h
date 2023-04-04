@@ -8,6 +8,7 @@
  * IN THE FUTURE WE WILL MOVE ALL FUNCTIONS TO THEIR OWN FILES AND ONLY HAVE THE INCLUDES FOR THEM... PRIVATE OR PUBLIC THAT IS
  */
 #include "bluetooth.h"
+#include "error.h"
 #include "messages.h"
 //init
 intersynth_error_t intersynth_init(void);

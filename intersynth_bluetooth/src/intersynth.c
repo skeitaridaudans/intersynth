@@ -1,4 +1,4 @@
-#include "../include/intersynth.h"
+#include "intersynth.h"
 
 intersynth_error_t intersynth_init(void) {
     intersynth_init_bluetooth();
