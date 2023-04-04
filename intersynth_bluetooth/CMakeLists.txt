@@ -5,8 +5,8 @@ set(CMAKE_C_STANDARD 11)
 
 add_subdirectory(platform)
 
-target_include_directories(intersynth_bluetooth PUBLIC include)
-target_include_directories(intersynth_bluetooth PUBLIC src)
+include_directories(intersynth_bluetooth PUBLIC include)
+include_directories(intersynth_bluetooth PUBLIC src)
 
 file(GLOB SOURCES "src/*.c")
 file(GLOB HEADERS "include/*.h")
