@@ -21,7 +21,7 @@ void bluetooth_init(void) {
     //printf("SOCKET WSA ERROR %d", WSAGetLastError());
     bluetooth_handler.addr.addressFamily = AF_BTH;
     bluetooth_handler.addr.btAddr = 0; // set the Bluetooth address to 0, will be updated later
-    bluetooth_handler.addr.port = 4;
+    bluetooth_handler.addr.port = 1;
     bluetooth_handler.socket = sockfd;
     intersynth_set_success_error();
 }
