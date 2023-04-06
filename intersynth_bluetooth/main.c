@@ -2,7 +2,6 @@
 // Created by star on 6.3.2023.
 //
 #include "include/intersynth.h"
-#include "platform/windows/bluetooth_win.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
