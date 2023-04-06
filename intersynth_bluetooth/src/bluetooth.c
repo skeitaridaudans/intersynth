@@ -24,7 +24,7 @@ void intersynth_init_bluetooth(void) {
     //printf("SOCKET WSA ERROR %d", WSAGetLastError());
     bluetooth_handler.addr.addressFamily = AF_BTH;
     bluetooth_handler.addr.btAddr = 0; // set the Bluetooth address to 0, will be updated later
-    bluetooth_handler.addr.port = 4;
+    bluetooth_handler.addr.port = 1;
     bluetooth_handler.socket = sockfd;
     intersynth_set_success_error();
 }
@@ -154,6 +154,7 @@ void intersynth_select_device(int device_index)
 
 
 static void intersynth_connect(BTH_ADDR btaddr)
+
 {
     //Connect to a device via bluetooth_handler.socket using bluetooth_handler.addr#
     /*
@@ -175,11 +176,35 @@ static void intersynth_connect(BTH_ADDR btaddr)
     }
     bluetooth_handler.connected = TRUE;
 }
+void intersynth_connect_fixed_addr(void)
+
+{
+    //Connect to a device via bluetooth_handler.socket using bluetooth_handler.addr#
+
+    BLUETOOTH_ADDRESS btaddrs;
+
+    btaddrs.rgBytes[0] = 0xFC;
+    btaddrs.rgBytes[1] = 0x9B;
+    btaddrs.rgBytes[2] = 0xC4;
+    btaddrs.rgBytes[3] = 0x01;
+    btaddrs.rgBytes[4] = 0x5F;
+    btaddrs.rgBytes[5] = 0xE4;
+
+    bluetooth_handler.addr.btAddr = btaddrs.ullLong;
+
+    //bluetooth_handler.addr.btAddr = btaddr;
+    if(connect(bluetooth_handler.socket, (const struct sockaddr *) &bluetooth_handler.addr, sizeof(bluetooth_handler.addr)) < 0) {
+        printf("WSA ERROR %d\n",WSAGetLastError());
+        intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
+    }
+    bluetooth_handler.connected = TRUE;
+}
+
 void intersynth_disconnect(void)
 {
     //Disconnect from a device via bluetooth_handler.socket
     int status = closesocket(bluetooth_handler.socket);
-    if(status < 0)
+    if(status != 0)
     {
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
     }
@@ -210,3 +235,4 @@ void intersynth_check_connection(void)
     printf("%d", error_code);
     //Here depending on the error_code set the bluetooth_handler.connected to true or false.
 }
+

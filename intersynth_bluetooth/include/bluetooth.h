@@ -46,6 +46,7 @@ int intersynth_scan_devices_found(void);
 void intersynth_select_device(int device_index);
 
 static void intersynth_connect(BTH_ADDR btaddr);
+void intersynth_connect_fixed_addr(void);
 void intersynth_disconnect(void);
 
 //BLUETOOTH SEND
