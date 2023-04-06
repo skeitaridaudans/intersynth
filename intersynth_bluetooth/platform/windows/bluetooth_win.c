@@ -2,30 +2,20 @@
 // Created by star on 6.3.2023.
 //
 
+#include "bluetooth_win.h"
 
-#include "bluetooth.h"
-#include "error.h"
-#include <winsock2.h>
-#include <ws2bth.h>
-#include <bthsdpdef.h>
-#include <bthdef.h>
-#include <bthledef.h>
-#include <BluetoothAPIs.h>
-
-int total_devices = 0;
-intersynth_bluetooth_device_inquiry* intersynth_ii = NULL;
+extern int total_devices;
+extern intersynth_bluetooth_device_inquiry* intersynth_ii;
 
 void bluetooth_init(void) {
     WSADATA wsaData;
     int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (result != 0) {
-        //TODO: Error handling - SET ERROR CODE, possibly return a "bluetooth_error_t" struct
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
         return;
     }
     int sockfd = socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM); // use AF_BTH and BTHPROTO_RFCOMM on Windows
     if (sockfd < 0) {
-        //TODO: Error handling - SET ERROR CODE, possibly return a "intersynth_error_t" struct
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
         return;
     }
@@ -58,60 +48,49 @@ void bluetooth_scan(void)
         intersynth_set_error(INTERSYNTH_ERROR_MEMORY_NOT_CLEARED);
         return;
     }
-    //Scan the local area for devices and store MAC and Name
-    //TODO: PUT EVERY FOUND DEVICE INTO A GLOBAL ARRAY OF intersynth_bluetooth_device_inquiry structures.
-    //Set flags so we flush the cache and get the names and addresses (MAC)
-    DWORD flags =  LUP_CONTAINERS | LUP_FLUSHCACHE | LUP_RETURN_ADDR | LUP_RETURN_NAME;
-    WSAQUERYSET querySet;
-    memset(&querySet, 0x00, sizeof(WSAQUERYSET)); // Clear it
-    querySet.dwSize = sizeof(WSAQUERYSET); // No idea
-    querySet.dwNameSpace = NS_BTH; //We want to find bluetooth devices
-    //querySet.lpServiceClassId = (LPGUID) &SerialPortServiceClass_UUID;
-    HANDLE hLookup = NULL; // We get a handle back from WSALookupServiceBegin function to iterate over found devices
+    BLUETOOTH_DEVICE_INFO device_info;
+    BLUETOOTH_DEVICE_SEARCH_PARAMS search_criteria;
+    HBLUETOOTH_DEVICE_FIND found_device;
+    BOOL next = TRUE;
+    int duration = 8; //Scan for 8*1.25 seconds.
+    int flush_cache = 1; //Flush the cache, essentially get the newest results instead from memory.
 
-    int result = WSALookupServiceBegin(&querySet, flags, &hLookup);
-    if (result != 0) {
-        //If WSALookup fails
+    memset((&device_info), 0, (sizeof(BLUETOOTH_DEVICE_INFO)));
+    memset((&search_criteria), 0, (sizeof(BLUETOOTH_DEVICE_SEARCH_PARAMS)));
+
+    device_info.dwSize = sizeof(BLUETOOTH_DEVICE_INFO);
+    search_criteria.dwSize = sizeof(BLUETOOTH_DEVICE_SEARCH_PARAMS);
+    search_criteria.fReturnAuthenticated = TRUE;
+    search_criteria.fReturnRemembered = !flush_cache;
+    search_criteria.fReturnConnected = TRUE;
+    search_criteria.fReturnUnknown = TRUE;
+    search_criteria.fIssueInquiry = TRUE;
+    search_criteria.cTimeoutMultiplier = duration;
+    search_criteria.hRadio = NULL;
+
+    found_device = BluetoothFindFirstDevice(&search_criteria, &device_info);
+
+    if(found_device == NULL)
+    {
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
         return;
     }
 
-    //Buffers and setup for the next system call
-    BYTE buffer[4096];
-    DWORD bufferLength = sizeof(buffer);
-    WSAQUERYSET* pResults = (WSAQUERYSET*) buffer;
-
-    //intersynth_ii = (intersynth_bluetooth_device_inquiry*)malloc(MAX_DEVICE_II * sizeof(intersynth_bluetooth_device_inquiry));
-    while (TRUE) {
-        //While loop to iterate over all of the devices we found
-        result = WSALookupServiceNext(hLookup, flags, &bufferLength, pResults);
-        if (result == WSA_E_NO_MORE || result == WSAENOMORE) {
-            break; //If no more devices where found
-        }
-        else if (result == -1 && WSAGetLastError() == 10110){
-            break; //Same as above
-        }
-        else if (result != 0) {
-            printf("result: %d\n", result);
-            continue;
-        }
+    while(next)
+    {
+        BTH_ADDR bthAddr = device_info.Address.ullLong;
         total_devices++;
         intersynth_bluetooth_device_inquiry* temp = realloc(intersynth_ii, total_devices * sizeof(intersynth_bluetooth_device_inquiry));
         if(temp == NULL)
         {
+            //TODO: Need to fix free function here.
             intersynth_set_error(INTERSYNTH_ERROR_MEMORY);
             free(intersynth_ii);
-            intersynth_ii = NULL;
             return;
         }
-        intersynth_ii = temp;
-
-        // Extract the MAC address from the Bluetooth address structure
-        BTH_ADDR bthAddr = ((SOCKADDR_BTH*) pResults->lpcsaBuffer->RemoteAddr.lpSockaddr)->btAddr;
-
         // Convert the MAC address to a string
         char szMacAddr[18];
-        snprintf(szMacAddr, sizeof(szMacAddr), "%02X:%02X:%02X:%02X:%02X:%02X",
+        snprintf(szMacAddr, sizeof(szMacAddr), "%02llX:%02llX:%02llX:%02llX:%02llX:%02llX",
                  (bthAddr >> (5 * 8)) & 0xff,
                  (bthAddr >> (4 * 8)) & 0xff,
                  (bthAddr >> (3 * 8)) & 0xff,
@@ -127,15 +106,14 @@ void bluetooth_scan(void)
                 free(intersynth_ii[i].name);
             }
             free(intersynth_ii);
-            intersynth_ii = NULL;
             return;
         }
         memset(intersynth_ii[total_devices - 1].name, 0, sizeof(TCHAR) * (256 + 1));
-        strcpy(intersynth_ii[total_devices - 1].name,pResults->lpszServiceInstanceName);
-        // Here, we'll just print them to the console
-        printf("Device Name: %s, MAC Address: %s\n", pResults->lpszServiceInstanceName, szMacAddr);
+        size_t tst = wcstombs(intersynth_ii[total_devices - 1].name, device_info.szName, 256);
+        if (tst == -1)
+            intersynth_ii[total_devices - 1].name = "Unknown";
+        next = BluetoothFindNextDevice(found_device, &device_info);
     }
-    WSALookupServiceEnd(hLookup);
 }
 
 void bluetooth_scan_free(void)
@@ -144,7 +122,6 @@ void bluetooth_scan_free(void)
         free(intersynth_ii[i].name);
     }
     free(intersynth_ii);
-    intersynth_ii = NULL;
     total_devices = 0;
 }
 
@@ -157,13 +134,6 @@ int bluetooth_scan_devices_found(void)
 {
     return total_devices;
 }
-
-void bluetooth_select_device(int device_index)
-{
-    //Tries to connect to the device index inside of intersynth_ii global array. Check error to see if connection has ben established.
-    bluetooth_connect(intersynth_ii[device_index].btaddr);
-}
-
 
 static void bluetooth_connect(BTH_ADDR btaddr)
 {
@@ -187,6 +157,14 @@ static void bluetooth_connect(BTH_ADDR btaddr)
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
     }
 }
+
+void bluetooth_select_device(int device_index)
+{
+    //Tries to connect to the device index inside of intersynth_ii global array. Check error to see if connection has ben established.
+    bluetooth_connect(intersynth_ii[device_index].btaddr);
+}
+
+
 void bluetooth_disconnect(void)
 {
     //Disconnect from a device via bluetooth_handler.socket

@@ -10,15 +10,28 @@
 #include <string.h>
 #include "error.h"
 
-typedef struct {
-    char btaddr[19];
-    int8_t rssi;
+#ifdef _WIN32
+#include <winsock2.h>
+#include <bthdef.h>
+typedef struct
+{
+    BTH_ADDR btaddr;
+    LPSTR name;
 } intersynth_bluetooth_device_inquiry;
+#elif defined(__APPLE__)
+#include "bluetooth_osx.h"
+#elif defined(__linux__)
+#include "bluetooth_linux.h"
+#else
+#error Unsupported platform
+#endif
+
+
 
 int total_devices = 0;
 intersynth_bluetooth_device_inquiry* intersynth_ii = NULL;
 
-
+/*
 #ifdef _WIN32
 typedef struct {
     int socket;
@@ -41,6 +54,8 @@ typedef struct {
 #else
 #error Unsupported platform
 #endif
+*/
+
 
 void intersynth_init_bluetooth(void);
 void intersynth_deinit_bluetooth(void);

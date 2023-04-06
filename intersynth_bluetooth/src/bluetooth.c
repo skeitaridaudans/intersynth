@@ -3,8 +3,9 @@
 #include "bluetooth.h"
 #include <stdio.h>
 //Platform specific includes (Windows, OSX, Linux) for bluetooth functionality
+
 #ifdef _WIN32
-#include "bluetooth_win.h"
+#include "../platform/windows/bluetooth_win.h"
 #elif defined(__APPLE__)
 #include "bluetooth_osx.h"
 #elif defined(__linux__)
@@ -12,10 +13,6 @@
 #else
 #error Unsupported platform
 #endif
-
-//Bluetooth variables always stay the same
-int total_devices = 0;
-intersynth_bluetooth_device_inquiry* intersynth_ii = NULL;
 
 void intersynth_init_bluetooth(void) {
     bluetooth_init();

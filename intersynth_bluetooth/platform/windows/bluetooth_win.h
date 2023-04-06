@@ -6,15 +6,18 @@
 #include "bluetooth.h"
 #include "error.h"
 #include <stdio.h>
-
-int total_devices = 0;
-intersynth_bluetooth_device_inquiry* intersynth_ii = NULL;
-
+#include <winsock2.h>
+#include <ws2bth.h>
+#include <bthsdpdef.h>
+#include <bthdef.h>
+#include <BluetoothAPIs.h>
 typedef struct {
     int socket;
     SOCKADDR_BTH addr;
     int8_t rssi;
 } intersynth_bluetooth_t;
+
+static intersynth_bluetooth_t bluetooth_handler;
 
 void bluetooth_init(void);
 
