@@ -3,9 +3,8 @@
 //
 
 #include "bluetooth_win.h"
-
-extern int total_devices;
-extern intersynth_bluetooth_device_inquiry* intersynth_ii;
+struct intersynth_bluetooth_device_inquiry* intersynth_ii = NULL;
+int total_devices = 0;
 
 void bluetooth_init(void) {
     WSADATA wsaData;
@@ -80,7 +79,7 @@ void bluetooth_scan(void)
     {
         BTH_ADDR bthAddr = device_info.Address.ullLong;
         total_devices++;
-        intersynth_bluetooth_device_inquiry* temp = realloc(intersynth_ii, total_devices * sizeof(intersynth_bluetooth_device_inquiry));
+        struct intersynth_bluetooth_device_inquiry* temp = realloc(intersynth_ii, total_devices * sizeof(struct intersynth_bluetooth_device_inquiry));
         if(temp == NULL)
         {
             //TODO: Need to fix free function here.
@@ -88,6 +87,7 @@ void bluetooth_scan(void)
             free(intersynth_ii);
             return;
         }
+        intersynth_ii = temp;
         // Convert the MAC address to a string
         char szMacAddr[18];
         snprintf(szMacAddr, sizeof(szMacAddr), "%02llX:%02llX:%02llX:%02llX:%02llX:%02llX",
@@ -125,7 +125,7 @@ void bluetooth_scan_free(void)
     total_devices = 0;
 }
 
-intersynth_bluetooth_device_inquiry* bluetooth_scan_get_results(void)
+struct intersynth_bluetooth_device_inquiry* bluetooth_scan_get_results(void)
 {
     return intersynth_ii;
 }
@@ -160,7 +160,7 @@ static void bluetooth_connect(BTH_ADDR btaddr)
 
 void bluetooth_select_device(int device_index)
 {
-    //Tries to connect to the device index inside of intersynth_ii global array. Check error to see if connection has ben established.
+    //Tries to connect to the device index inside intersynth_ii global array. Check error to see if connection has ben established.
     bluetooth_connect(intersynth_ii[device_index].btaddr);
 }
 

@@ -3,7 +3,7 @@
 //
 
 
-#include "bluetooth.h"
+
 #include "error.h"
 #include <stdio.h>
 #include <winsock2.h>
@@ -11,6 +11,13 @@
 #include <bthsdpdef.h>
 #include <bthdef.h>
 #include <BluetoothAPIs.h>
+#include <stdint.h>
+struct intersynth_bluetooth_device_inquiry
+{
+    BTH_ADDR btaddr;
+    LPSTR name;
+};
+
 typedef struct {
     int socket;
     SOCKADDR_BTH addr;
@@ -26,7 +33,7 @@ void bluetooth_deinit(void);
 //BLUETOOTH SETUP
 void bluetooth_scan(void);
 
-intersynth_bluetooth_device_inquiry* bluetooth_scan_get_results(void);
+struct intersynth_bluetooth_device_inquiry* bluetooth_scan_get_results(void);
 
 void bluetooth_scan_free(void);
 

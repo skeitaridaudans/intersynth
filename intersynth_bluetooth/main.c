@@ -2,6 +2,7 @@
 // Created by star on 6.3.2023.
 //
 #include "include/intersynth.h"
+#include "platform/windows/bluetooth_win.h"
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -30,7 +31,8 @@ int main(int argc, char **argv) {
     printf("Intersynth scan starting\n");
     intersynth_scan();
     printf("%s\n",error->error_string); // ERROR 2
-    intersynth_bluetooth_device_inquiry* ii = intersynth_scan_get_results();
+    struct intersynth_bluetooth_device_inquiry* ii = intersynth_scan_get_results();
+    int total_devices = intersynth_scan_devices_found();
     int id_wanted = 0;
     //iterating over the found devices like so.
     for (int i = 0; i < total_devices; i++) {
@@ -47,10 +49,10 @@ int main(int argc, char **argv) {
     //Device 3: Name: raspberrypi, Address: E4:5F:01:C4:9B:FC
     printf("%s\n",error->error_string);
 
-    printf("intersynth_connect_fixed_addr device\n");
+    printf("intersynth_select device : %d\n", id_wanted);
     //intersynth_connect_fixed_addr();
     intersynth_select_device(id_wanted);
-    //printf("%s\n",error->error_string);
+    printf("%s\n",error->error_string);
     printf("connect_fixed_addr done\n");
     intersynth_send("gamli virkar þetta", strlen("gamli virkar þetta"));
     printf("sleep start\n");

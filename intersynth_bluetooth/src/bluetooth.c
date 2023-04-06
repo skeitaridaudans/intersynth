@@ -27,7 +27,7 @@ void intersynth_scan(void)
     bluetooth_scan();
 }
 
-intersynth_bluetooth_device_inquiry* intersynth_scan_get_results(void)
+struct intersynth_bluetooth_device_inquiry* intersynth_scan_get_results(void)
 {
     return bluetooth_scan_get_results();
 }

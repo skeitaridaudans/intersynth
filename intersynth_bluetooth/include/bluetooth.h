@@ -11,13 +11,6 @@
 #include "error.h"
 
 #ifdef _WIN32
-#include <winsock2.h>
-#include <bthdef.h>
-typedef struct
-{
-    BTH_ADDR btaddr;
-    LPSTR name;
-} intersynth_bluetooth_device_inquiry;
 #elif defined(__APPLE__)
 #include "bluetooth_osx.h"
 #elif defined(__linux__)
@@ -26,10 +19,7 @@ typedef struct
 #error Unsupported platform
 #endif
 
-
-
-int total_devices = 0;
-intersynth_bluetooth_device_inquiry* intersynth_ii = NULL;
+extern struct intersynth_bluetooth_device_inquiry* intersynth_ii;
 
 /*
 #ifdef _WIN32
@@ -61,7 +51,7 @@ void intersynth_init_bluetooth(void);
 void intersynth_deinit_bluetooth(void);
 //BLUETOOTH SETUP
 void intersynth_scan(void);
-intersynth_bluetooth_device_inquiry* intersynth_scan_get_results(void);
+struct intersynth_bluetooth_device_inquiry* intersynth_scan_get_results(void);
 void intersynth_scan_free(void);
 int intersynth_scan_devices_found(void);
 void intersynth_select_device(int device_index);
