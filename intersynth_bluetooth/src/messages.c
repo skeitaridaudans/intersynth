@@ -122,14 +122,22 @@ void intersynth_remove_carrier(int operator_id) //intersynth_midi
     intersynth_send(msg, 5);
 }
 
-// following functions not in intersynth_midi
-// @TODO to implement
+//
 
-void intersynth_clear_operators();
+void intersynth_clear_operators()  // CLEAR_OPERATORS 0x70
+
+{
+    unsigned char msg[5];
+    msg[0] = SYSSEX_START;
+    msg[1] = INTERSYNTH_IDENTIFIER;
+    msg[2] = 0x01;
+    msg[3] = CLEAR_OPERATORS;   // no parameter
+    msg[4] = MESSAGE_END;
+    intersynth_send(msg, 5);
+}
 
 /*
  fra https://github.com/skeitaridaudans/lovesynths-cpp/blob/main/operators.cpp
- WTF is that??? SOLO_POINT? hvad er attack solo?
 
 void send_default_algorithm(){
 
@@ -165,34 +173,132 @@ void send_algorithm_envelopes(){
 
  */
 
-// @TODO Sophie need to check again amp env in teensy code
+// @TODO
 // https://github.com/skeitaridaudans/lovesynths-teensy/blob/main/SerialListener.h
+// gamla utgjafa
+
+// nyja
+//fra https://github.com/skeitaridaudans/lovesynths-cpp/blob/tcp_connect/envelopes.cpp
+
+
 
 //AMP_ENVELOPE_INFO
 
 
-
 //AMP_ENVELOPE_VALUE
-//    attack + index
+//    attack 0x80 + index
 //    time
-//    amp_value
+//    amp_value 0x30
 
-//ALGORITHM_ENVELOPE_INFO
-// ATTACK 0x80
-void intersynth_alg_envelope_info_insert(bool attack, int alg_index, float time);
-void intersynth_alg_envelope_info_remove(bool attack, int alg_index);
-void intersynth_alg_envelope_info_envelope_size(bool attack, int new_size);
+//ALGORITHM_ENVELOPE_INFO     0x80
+void intersynth_alg_envelope_info_insert(bool attack, int alg_index, float time)
+
+{
+unsigned char msg[6];
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
+msg[2] = 0x02;
+msg[3] = ATTACK +
+alg_index;     // ???
+msg[4] = ATTACK +
+time;    // ???
+msg[5] = MESSAGE_END;
+intersynth_send(msg,6);
+}
+
+
+void intersynth_alg_envelope_info_remove(bool attack, int alg_index)
+
+{
+unsigned char msg[5];
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
+msg[2] = 0x01;
+msg[3] = ATTACK + alg_index;
+msg[4] = MESSAGE_END;
+intersynth_send(msg, 5);
+}
+
+
+void intersynth_alg_envelope_info_envelope_size(bool attack, int new_size)
+
+{
+unsigned char msg[5];
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
+msg[2] = 0x01;
+msg[3] = ATTACK + new_size;
+msg[4] = MESSAGE_END;
+intersynth_send(msg, 5);
+}
+
+
 void intersynth_alg_envelope_info_update_time(bool attack, int alg_index, float new_time);
-void intersynth_alg_envelope_info_solo_value(bool attack, int alg_index);
+
+/*
+unsigned char msg[6];
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
+msg[2] = 0x02;
+msg[3] = ;
+msg[4] = ;
+msg[5] = MESSAGE_END;
+intersynth_send(msg, 6);
+*/
+
+void intersynth_alg_envelope_info_solo_value(bool attack, int alg_index)
+
+{
+unsigned char msg[5];
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
+msg[2] = 0x01;
+msg[3] = ATTACK + alg_index;
+msg[4] = MESSAGE_END;
+intersynth_send(msg, 5);
+}
+
 
 //AMP FIXED
 void intersynth_amp_fixed_ignore_envelope(float amp_level);
-void intersynth_amp_fixed_ignore_velocity(bool ignore);
+
+/*
+unsigned char msg[6];
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
+msg[2] = 0x02;
+msg[3] = ;
+msg[4] = ;
+msg[5] = MESSAGE_END;
+intersynth_send(msg, 6);
+*/
+
+void intersynth_amp_fixed_ignore_velocity(bool ignore)
+
+{
+unsigned char msg[5];
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
+msg[2] = 0x01;
+msg[3] = IGNORE_VELOCITY;   // 0x02
+msg[4] = MESSAGE_END;
+intersynth_send(msg, 5);
+}
 
 
-//FREQ SYNCED BY
-void intersynth_freq_synced_by(int operator_id, int sync_operator_num, bool on_off);
+//FREQ SYNCED BY  0x90
+void intersynth_freq_synced_by(int operator_id, int sync_operator_num, bool on_off)
 
+{
+unsigned char msg[6];
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
+msg[2] = 0x02;
+msg[3] = FREQ_SYNCED_BY + operator_id;
+msg[4] = sync_operator_num + on_off; //??????????
+msg[5] = MESSAGE_END;
+intersynth_send(msg, 6);
+}
 
 
 //NOTE INFO
@@ -204,11 +310,59 @@ assert(velocity <= 127 && velocity >= 0);
 // assert(freq )
 }
 
-void intersynth_note_info_note_off(int key);
+void intersynth_note_info_note_off(int key) // 0x02
+
+{
+unsigned char msg[5];
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
+msg[2] = 0x01;
+msg[3] = NOTE_OFF + key;
+msg[4] = MESSAGE_END;
+intersynth_send(msg, 5);
+}
+
 void intersynth_note_info_note_update(int key, int velocity, float freq);
+/*
+{
+unsigned char msg[5];
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
+msg[2] = 0x01;
+msg[3] = NOTE_UPDATE + key;  //
+NOTE_UPDATE + velocity
+NOTE_UPDATE + freq
+????
+msg[4] = MESSAGE_END;
+intersynth_send(msg, 5);
+}
+*/
 
-//NOTE MIDICHANNEL
-void intersynth_note_midi_channel(int midichannel);
+//NOTE MIDICHANNEL  --> 0xC0
+void intersynth_note_midi_channel(int midichannel)
 
-//EXPRESSIVE CHANGE
-void intersynth_expressive_change(int op_num,float freq_factor, float amp_factor);
+{
+unsigned char msg[5];
+msg[0] = SYSSEX_START;
+msg[1] = INTERSYNTH_IDENTIFIER;
+msg[2] = 0x01;
+msg[3] = MIDI_CHANNEL;  // --> 0xC0
+msg[4] = MESSAGE_END;
+intersynth_send(msg, 5);
+}
+
+
+//EXPRESSIVE CHANGE --> 0x20
+void intersynth_expressive_change(int op_num,float freq_factor, float amp_factor)
+
+{
+    unsigned char msg[6];
+    msg[0] = SYSSEX_START;
+    msg[1] = INTERSYNTH_IDENTIFIER;
+    msg[2] = 0x02;
+    msg[3] = op_num + freq_factor;  // really not sure :/
+    msg[4] = op_num + amp_factor;
+    msg[5] = MESSAGE_END;
+    intersynth_send(msg, 6);
+}
+
