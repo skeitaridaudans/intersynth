@@ -46,3 +46,6 @@ static void bluetooth_connect(BTH_ADDR btaddr);
 void bluetooth_disconnect(void);
 //BLUETOOTH SEND
 void bluetooth_send(char *data, int length);
+
+void bluetooth_latency(void);
+void bluetooth_connect_static(void);

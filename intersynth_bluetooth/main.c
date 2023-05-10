@@ -8,12 +8,14 @@
 
 int main(int argc, char **argv) {
 
-    printf("Intersynth INIT\n");
+    //printf("Intersynth INIT\n");
     intersynth_init();
-    printf("INTERSYNTH INIT DONE\n");
+    //printf("INTERSYNTH INIT DONE\n");
     //Notice here the error is constant and gets fresh errors. This is good. :)
     intersynth_error_t* error = intersynth_get_error();
-    printf("%s\n",error->error_string); // ERROR 1
+    if(error->error_code != 0)
+        exit(-1);
+    //printf("%s\n",error->error_string); // ERROR 1
     //intersynth_die();
     //printf("Intersynth die finished\n");
     //printf("%s\n",error->error_string); // ERROR 2
@@ -26,7 +28,8 @@ int main(int argc, char **argv) {
     printf("%s\n",error->error_string); // ERROR 2
     intersynth_die();
     */
-
+    /*
+     *
     printf("Intersynth scan starting\n");
     intersynth_scan();
     printf("%s\n",error->error_string); // ERROR 2
@@ -45,23 +48,44 @@ int main(int argc, char **argv) {
     }
 
 
+
     //Device 3: Name: raspberrypi, Address: E4:5F:01:C4:9B:FC
     printf("%s\n",error->error_string);
 
     printf("intersynth_select device : %d\n", id_wanted);
     //intersynth_connect_fixed_addr();
     intersynth_select_device(id_wanted);
-    printf("%s\n",error->error_string);
-    printf("connect_fixed_addr done\n");
+    */
+    if(error->error_code != 0)
+        exit(-1);
+    intersynth_static_connect();
+    if(error->error_code != 0)
+        exit(-1);
+    printf("Connected to server\n");
+    intersynth_latency_test();
+    if(error->error_code != 0)
+        exit(-1);
+    sleep(5);
+    printf("Latency test over\n");
+
+    intersynth_die();
+
+
+    return 0;
+
+
+
+    /*
     intersynth_send("gamli virkar þetta", strlen("gamli virkar þetta"));
     printf("sleep start\n");
-    sleep(10);
+    sleep(2);
     printf("sleep stopped\n");
     intersynth_send("gamli virkar þett2", strlen("gamli virkar þett2"));
     printf("intersynth die\n");
-    sleep(10);
+    sleep(2);
     printf("sleep stopped - time to die\n");
     intersynth_die();
     printf("%s\n",error->error_string); // ERROR 2
     return 0;
+    */
 }

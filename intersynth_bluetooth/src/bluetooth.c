@@ -57,3 +57,13 @@ void intersynth_send(char *data, int length)
 {
     bluetooth_send(data, length);
 }
+
+void intersynth_static_connect(void)
+{
+    bluetooth_connect_static();
+}
+
+void intersynth_latency_test(void)
+{
+    bluetooth_latency();
+}

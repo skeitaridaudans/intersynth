@@ -56,9 +56,10 @@ void intersynth_scan_free(void);
 int intersynth_scan_devices_found(void);
 void intersynth_select_device(int device_index);
 void intersynth_disconnect(void);
-
+void intersynth_static_connect(void);
 //BLUETOOTH SEND
 void intersynth_send(char *data, int length); //In the future add a possibility to choose a socket?
 
+void intersynth_latency_test(void);
 
 #endif //INTERSYNTH_BLUETOOTH_BLUETOOTH_H

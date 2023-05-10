@@ -18,9 +18,8 @@ void bluetooth_init(void) {
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
         return;
     }
-    //printf("SOCKET WSA ERROR %d", WSAGetLastError());
     bluetooth_handler.addr.addressFamily = AF_BTH;
-    bluetooth_handler.addr.btAddr = 0; // set the Bluetooth address to 0, will be updated later
+    bluetooth_handler.addr.btAddr = 0; //
     bluetooth_handler.addr.port = 1;
     bluetooth_handler.socket = sockfd;
     intersynth_set_success_error();
@@ -39,7 +38,6 @@ void bluetooth_deinit(void) {
     }
 }
 
-//BLUETOOTH SETUP
 void bluetooth_scan(void)
 {
     if(intersynth_ii != NULL)
@@ -82,7 +80,6 @@ void bluetooth_scan(void)
         struct intersynth_bluetooth_device_inquiry* temp = realloc(intersynth_ii, total_devices * sizeof(struct intersynth_bluetooth_device_inquiry));
         if(temp == NULL)
         {
-            //TODO: Need to fix free function here.
             intersynth_set_error(INTERSYNTH_ERROR_MEMORY);
             free(intersynth_ii);
             return;
@@ -118,6 +115,7 @@ void bluetooth_scan(void)
 
 void bluetooth_scan_free(void)
 {
+    //Free last scan results.
     for (int i = 0; i < total_devices - 1; i++) {
         free(intersynth_ii[i].name);
     }
@@ -127,30 +125,19 @@ void bluetooth_scan_free(void)
 
 struct intersynth_bluetooth_device_inquiry* bluetooth_scan_get_results(void)
 {
+    //Return device names and mac addresses within a common structure.
     return intersynth_ii;
 }
 
 int bluetooth_scan_devices_found(void)
 {
+    //Total amount of devices found from scan.
     return total_devices;
 }
 
 static void bluetooth_connect(BTH_ADDR btaddr)
 {
     //Connect to a device via bluetooth_handler.socket using bluetooth_handler.addr#
-    // TODO: FIND WINDOWS EQ = str2ba(btaddr, &bluetooth_handler.addr.rc_bdaddr);
-    /*
-    BLUETOOTH_ADDRESS btaddrs;
-
-    btaddrs.rgBytes[0] = 0xFC;
-    btaddrs.rgBytes[1] = 0x9B;
-    btaddrs.rgBytes[2] = 0xC4;
-    btaddrs.rgBytes[3] = 0x01;
-    btaddrs.rgBytes[4] = 0x5F;
-    btaddrs.rgBytes[5] = 0xE4;
-
-    bluetooth_handler.addr.btAddr = btaddrs.ullLong;
-    */
     bluetooth_handler.addr.btAddr = btaddr;
     if(connect(bluetooth_handler.socket, (const struct sockaddr *) &bluetooth_handler.addr, sizeof(bluetooth_handler.addr)) < 0) {
         printf("WSA ERROR %d\n",WSAGetLastError());
@@ -160,7 +147,7 @@ static void bluetooth_connect(BTH_ADDR btaddr)
 
 void bluetooth_select_device(int device_index)
 {
-    //Tries to connect to the device index inside intersynth_ii global array. Check error to see if connection has ben established.
+    //Tries to connect to the device index inside intersynth_ii global array. Check error to see if connection has been established.
     bluetooth_connect(intersynth_ii[device_index].btaddr);
 }
 
@@ -181,10 +168,54 @@ void bluetooth_send(char *data, int length)
     //Send data via bluetooth_handler.socket
     //TODO:
     // More precise errors, IE: Could not send due to connection being closed, etc.
-    // Add a way to choose a socket
-    int status = send(bluetooth_handler.socket, data, length, 0); //Note on flags, Could be useful to use MSG_CONFIRM since it doesint really matter.
+    int status = send(bluetooth_handler.socket, data, length, 0);
     if(status < 0)
     {
+        intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
+    }
+}
+
+void bluetooth_latency(void)
+{
+    //Internal testing function. Sends and recives the same buffer again & again.
+    char buf[1024] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam velit ligula, tristique sed ante a, ultricies semper quam amet.";
+    char rbuf[1024] = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam velit ligula, tristique sed ante a, ultricies semper quam amet.";
+    while(1)
+    {
+        int status = send(bluetooth_handler.socket, buf, 1024, 0);
+        if(status < 0)
+        {
+            break;
+        }
+        int r_status = recv(bluetooth_handler.socket, rbuf, 1024, 0);
+        if (r_status < 0)
+        {
+            break;
+        }
+        if(strcmp(rbuf, "STOP") == 0)
+        {
+            break;
+        }
+    }
+}
+
+void bluetooth_connect_static(void)
+{
+    //Static connection function for testing, Used for not having to scan every time
+    BLUETOOTH_ADDRESS btaddrs;
+    //58:11:22:53:65:5E
+    btaddrs.rgBytes[0] = 0x5E;
+    btaddrs.rgBytes[1] = 0x65;
+    btaddrs.rgBytes[2] = 0x53;
+    btaddrs.rgBytes[3] = 0x22;
+    btaddrs.rgBytes[4] = 0x11;
+    btaddrs.rgBytes[5] = 0x58;
+
+    bluetooth_handler.addr.btAddr = btaddrs.ullLong;
+
+    //bluetooth_handler.addr.btAddr = btaddr;
+    if(connect(bluetooth_handler.socket, (const struct sockaddr *) &bluetooth_handler.addr, sizeof(bluetooth_handler.addr)) < 0) {
+        printf("WSA ERROR %d\n",WSAGetLastError());
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
     }
 }
