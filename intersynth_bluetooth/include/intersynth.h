@@ -32,8 +32,4 @@ typedef struct {
 } intersynth_message_t;
 
 
-//MORE TO COME
-
-
-
 #endif //INTERSYNTH_BLUETOOTH_INTERSYNTH_H

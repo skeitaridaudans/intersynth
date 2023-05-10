@@ -1,11 +1,14 @@
-//
-// Created by star on 6.3.2023.
-//
-
 #include "error.h"
-//TODO: Get error string from error code enum as defined in error.h
+/**
+ * @brief The error struct
+ * Stores the error code and the error string
+ */
 static intersynth_error_t intersynth_error;
 
+/**
+ * @brief The error codes
+ * The error codes are stored in an array of strings
+ */
 const char* error_codes[] = {
         "Success",
         "Failure",
@@ -18,6 +21,9 @@ const char* error_codes[] = {
         "Memory not cleared"};
 
 const intersynth_error_t* intersynth_get_error(void) {
+    /**
+     * @brief Returns the error struct
+     */
     return &intersynth_error;
 }
 
@@ -36,6 +42,7 @@ void intersynth_clear_error(void) {
     intersynth_error.error_string = error_codes[INTERSYNTH_ERROR_SUCCESS];
 }
 
+//Helper functions if you don't want to use the error struct
 intersynth_error_code intersynth_get_error_code(void)
 {
     return intersynth_error.error_code;

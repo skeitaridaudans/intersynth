@@ -1,9 +1,7 @@
 
 //Bluetooth includes
 #include "bluetooth.h"
-#include <stdio.h>
 //Platform specific includes (Windows, OSX, Linux) for bluetooth functionality
-
 #ifdef _WIN32
 #include "../platform/windows/bluetooth_win.h"
 #elif defined(__APPLE__)
@@ -13,6 +11,8 @@
 #else
 #error Unsupported platform
 #endif
+
+// This file is an abstraction layer for the bluetooth functionality.
 
 void intersynth_init_bluetooth(void) {
     bluetooth_init();
@@ -56,4 +56,14 @@ void intersynth_disconnect(void)
 void intersynth_send(char *data, int length)
 {
     bluetooth_send(data, length);
+}
+
+void intersynth_static_connect(void)
+{
+    bluetooth_connect_static();
+}
+
+void intersynth_latency_test(void)
+{
+    bluetooth_latency();
 }
