@@ -22,7 +22,6 @@ def main():
         for test_time_sec in [10, 20]:
             test_iteration = 0
             success = 0
-            error = 0
             while success < 10:
                 test_iteration += 1
                 print(f"Starting test #{test_iteration} s:{success} e:{error} dist:{distance} test_time:{test_time_sec}")
