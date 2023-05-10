@@ -15,7 +15,7 @@
 #elif defined(__APPLE__)
 #include "bluetooth_osx.h"
 #elif defined(__linux__)
-#include "bluetooth_linux.h"
+#include "../platform/linux/bluetooth_linux.h"
 #else
 #error Unsupported platform
 #endif

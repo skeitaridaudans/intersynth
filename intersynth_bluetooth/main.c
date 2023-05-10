@@ -7,29 +7,13 @@
 #include <unistd.h>
 
 int main(int argc, char **argv) {
-
-    //printf("Intersynth INIT\n");
+    //Demo usage.
     intersynth_init();
-    //printf("INTERSYNTH INIT DONE\n");
-    //Notice here the error is constant and gets fresh errors. This is good. :)
+    //Notice here the error is constant and gets fresh errors.
     intersynth_error_t* error = intersynth_get_error();
     if(error->error_code != 0)
         exit(-1);
-    //printf("%s\n",error->error_string); // ERROR 1
-    //intersynth_die();
-    //printf("Intersynth die finished\n");
-    //printf("%s\n",error->error_string); // ERROR 2
-    //{{0xFC, 0x9B, 0xC4, 0x01, 0x5F, 0xE4}}
-    /*intersynth_connect("00:11:22:33:44:55");
-    printf("Intersynth Connect\n");
-    printf("%s\n",error->error_string); // ERROR 2
-    char* mesg = "gamli virkar þetta";
-    intersynth_send(mesg, strlen(mesg));
-    printf("%s\n",error->error_string); // ERROR 2
-    intersynth_die();
-    */
-    /*
-     *
+
     printf("Intersynth scan starting\n");
     intersynth_scan();
     printf("%s\n",error->error_string); // ERROR 2
@@ -38,54 +22,21 @@ int main(int argc, char **argv) {
     int id_wanted = 0;
     //iterating over the found devices like so.
     for (int i = 0; i < total_devices; i++) {
-        printf("Device %d: Name: %s, Address: %02llX:%02llX:%02llX:%02llX:%02llX:%02llX\n", i, ii[i].name,
-               (ii[i].btaddr >> 40) & 0xFF, (ii[i].btaddr >> 32) & 0xFF,
-               (ii[i].btaddr >> 24) & 0xFF, (ii[i].btaddr >> 16) & 0xFF,
-               (ii[i].btaddr >> 8) & 0xFF, (ii[i].btaddr & 0xFF));
-        if(strcmp(ii[i].name, "raspberrypi") == 0){
+        printf("Device %d: Name: %s, Address: %s\n", i, ii[i].name, ii[i].bdaddr);
+        if(strcmp(ii[i].name, "raspberrypi"))
+        {
             id_wanted = i;
         }
     }
-
-
-
-    //Device 3: Name: raspberrypi, Address: E4:5F:01:C4:9B:FC
-    printf("%s\n",error->error_string);
-
-    printf("intersynth_select device : %d\n", id_wanted);
-    //intersynth_connect_fixed_addr();
     intersynth_select_device(id_wanted);
-    */
-    if(error->error_code != 0)
-        exit(-1);
-    intersynth_static_connect();
-    if(error->error_code != 0)
-        exit(-1);
-    printf("Connected to server\n");
-    intersynth_latency_test();
-    if(error->error_code != 0)
-        exit(-1);
-    sleep(5);
-    printf("Latency test over\n");
-
+    printf("%s\n",error->error_string);
+    //after checking if we got an error after selecting a device and if its good we can then
+    //send some messages here.
+    sleep(10);
+    intersynth_disconnect();
+    printf("%s\n",error->error_string);
     intersynth_die();
-
-
+    printf("%s\n",error->error_string);
     return 0;
 
-
-
-    /*
-    intersynth_send("gamli virkar þetta", strlen("gamli virkar þetta"));
-    printf("sleep start\n");
-    sleep(2);
-    printf("sleep stopped\n");
-    intersynth_send("gamli virkar þett2", strlen("gamli virkar þett2"));
-    printf("intersynth die\n");
-    sleep(2);
-    printf("sleep stopped - time to die\n");
-    intersynth_die();
-    printf("%s\n",error->error_string); // ERROR 2
-    return 0;
-    */
 }

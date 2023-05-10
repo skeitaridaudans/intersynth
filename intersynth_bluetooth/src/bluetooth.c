@@ -7,7 +7,8 @@
 #elif defined(__APPLE__)
 #include "bluetooth_osx.h"
 #elif defined(__linux__)
-#include "bluetooth_linux.h"
+#include "../platform/linux/bluetooth_linux.h"
+
 #else
 #error Unsupported platform
 #endif
@@ -58,12 +59,12 @@ void intersynth_send(char *data, int length)
     bluetooth_send(data, length);
 }
 
-void intersynth_static_connect(void)
-{
-    bluetooth_connect_static();
-}
-
 void intersynth_latency_test(void)
 {
     bluetooth_latency();
+}
+
+void intersynth_static_connect(void)
+{
+    bluetooth_connect_fixed();
 }
