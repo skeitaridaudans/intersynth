@@ -1,31 +1,41 @@
-//
-// Created by star on 6.3.2023.
-//
-
 #include "bluetooth_win.h"
+/**
+ * Windows implementation of bluetooth.h
+ */
+
 struct intersynth_bluetooth_device_inquiry* intersynth_ii = NULL;
 int total_devices = 0;
 
 void bluetooth_init(void) {
+    /**
+     * Initialize the Windows bluetooth stack.
+     */
     WSADATA wsaData;
     int result = WSAStartup(MAKEWORD(2, 2), &wsaData);
     if (result != 0) {
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
         return;
     }
-    int sockfd = socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM); // use AF_BTH and BTHPROTO_RFCOMM on Windows
+    /**
+     * Create a socket for the bluetooth connection. Using AF_BTH for the address family, SOCK_STREAM for the socket type and BTHPROTO_RFCOMM for the protocol.
+     */
+    int sockfd = socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM);
     if (sockfd < 0) {
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);
         return;
     }
     bluetooth_handler.addr.addressFamily = AF_BTH;
-    bluetooth_handler.addr.btAddr = 0; //
+    bluetooth_handler.addr.btAddr = 0; // We don't know the address yet
     bluetooth_handler.addr.port = 1;
     bluetooth_handler.socket = sockfd;
     intersynth_set_success_error();
 }
 
-void bluetooth_deinit(void) {
+void bluetooth_deinit(void)
+{
+    /**
+     * Deinitialize the Windows bluetooth stack.
+     */
     int status = closesocket(bluetooth_handler.socket);
     if(status < 0)
     {
@@ -40,6 +50,9 @@ void bluetooth_deinit(void) {
 
 void bluetooth_scan(void)
 {
+    /**
+     * Scan for bluetooth devices.
+     */
     if(intersynth_ii != NULL)
     {
         intersynth_set_error(INTERSYNTH_ERROR_MEMORY_NOT_CLEARED);
@@ -97,6 +110,7 @@ void bluetooth_scan(void)
         // Store the MAC address and name in a global array or data structure
         intersynth_ii[total_devices-1].btaddr = bthAddr;
         intersynth_ii[total_devices-1].name = (LPSTR)malloc(sizeof(TCHAR) * (256 + 1));
+
         if (intersynth_ii[total_devices - 1].name == NULL) {
             intersynth_set_error(INTERSYNTH_ERROR_MEMORY);
             for (int i = 0; i < total_devices - 1; i++) {
@@ -105,6 +119,7 @@ void bluetooth_scan(void)
             free(intersynth_ii);
             return;
         }
+
         memset(intersynth_ii[total_devices - 1].name, 0, sizeof(TCHAR) * (256 + 1));
         size_t tst = wcstombs(intersynth_ii[total_devices - 1].name, device_info.szName, 256);
         if (tst == -1)
@@ -212,8 +227,6 @@ void bluetooth_connect_static(void)
     btaddrs.rgBytes[5] = 0x58;
 
     bluetooth_handler.addr.btAddr = btaddrs.ullLong;
-
-    //bluetooth_handler.addr.btAddr = btaddr;
     if(connect(bluetooth_handler.socket, (const struct sockaddr *) &bluetooth_handler.addr, sizeof(bluetooth_handler.addr)) < 0) {
         printf("WSA ERROR %d\n",WSAGetLastError());
         intersynth_set_error(INTERSYNTH_ERROR_BLUETOOTH);

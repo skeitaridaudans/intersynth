@@ -21,31 +21,6 @@
 
 extern struct intersynth_bluetooth_device_inquiry* intersynth_ii;
 
-/*
-#ifdef _WIN32
-typedef struct {
-    int socket;
-    SOCKADDR_BTH addr;
-    int8_t rssi;
-} intersynth_bluetooth_t;
-#elif defined(__APPLE__)
-typedef struct {
-    int socket;
-    struct sockaddr addr;
-    int8_t rssi;
-} intersynth_bluetooth_t;
-#elif defined(__linux__)
-typedef struct {
-    int socket;
-    struct sockaddr_rc addr;
-    int8_t rssi;
-} intersynth_bluetooth_t;
-
-#else
-#error Unsupported platform
-#endif
-*/
-
 
 void intersynth_init_bluetooth(void);
 void intersynth_deinit_bluetooth(void);
@@ -58,7 +33,7 @@ void intersynth_select_device(int device_index);
 void intersynth_disconnect(void);
 void intersynth_static_connect(void);
 //BLUETOOTH SEND
-void intersynth_send(char *data, int length); //In the future add a possibility to choose a socket?
+void intersynth_send(char *data, int length);
 
 void intersynth_latency_test(void);
 
